@@ -42,6 +42,7 @@
   BnTests.c
   EcTests.c
   X509Tests.c
+  Pkcs7GetCertificatesList.c
 
 [Packages]
   MdePkg/MdePkg.dec
@@ -64,7 +65,7 @@
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServicePkcs5HashPassword           ## CONSUMES
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServicePkcs1v2Encrypt              ## CONSUMES
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServicePkcs7Sign                   ## CONSUMES
-  gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServiceVerifyEKUsInPkcs7Signature  ##CONSUMES
+  gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServiceVerifyEKUsInPkcs7Signature  ## CONSUMES
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServiceAuthenticodeVerify          ## CONSUMES
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServiceImageTimestampVerify        ## CONSUMES
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServiceDhNew                       ## CONSUMES
