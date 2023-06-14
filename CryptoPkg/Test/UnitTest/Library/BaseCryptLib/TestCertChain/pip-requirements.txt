@@ -1,0 +1,4 @@
+edk2-pytool-library>=0.15.2
+hexdump>=3.3
+pyasn1>=0.5.0
+pyasn1-modules>=0.3.0
