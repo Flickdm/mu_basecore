@@ -929,80 +929,78 @@ _Exit:
 
 /**
   Takes a certificate chain created by Pkcs7GetCertificatesList or Pks7GetSigners and indexes into
-  the chain to find a certificate at a given index, 
+  the chain to find a certificate at a given index 
 
-  // This is the expected format of the certificate chain format:
-  //      UINT8  CertNumber;
-  //      UINT32 Cert1Length;
-  //      UINT8  Cert1[];
-  //      UINT32 Cert2Length;
-  //      UINT8  Cert2[];
-  //      ...
-  //      UINT32 CertnLength;
-  //      UINT8  Certn[];
-  //
+  This is the expected format of the certificate chain format:
+       UINT8  CertNumber;
+       UINT32 Cert1Length;
+       UINT8  Cert1[];
+       UINT32 Cert2Length;
+       UINT8  Cert2[];
+       ...
+       UINT32 CertnLength;
+       UINT8  Certn[];
   
-  @param[in]  Certificates       Pointer to the Certificate Chain to search
-  @param[in]  CertificatesLength Length of the Certificate Chain in bytes
-  @param[in]  Index              Index of the certificate to retrieve, 0 is the root certificate
-                                 and the highest index is the leaf certificate
+  @param[in]  Certificates       Pointer to the Certificate Chain to search, must not be NULL
+  @param[in]  CertificatesLength Length of the Certificate Chain in bytes, must be > 0
+  @param[in]  Index              Index of the certificate to retrieve, 0 is the top level certificate
+                                 and the highest index is the leaf certificate, -1 will return the leaf
   @param[out] Certificate        Pointer to the certificate at the specified index, if index is valid
-                                 otherwise NULL
+                                 otherwise the pointer will be unchanged, check return value to see
+                                 if the pointer is safe to use
   @param[out] CertificateLength  Length of the certificate at the specified index, if index is valid
-                                 otherwise 0
+                                 otherwise unchanged, check return value to see if the length is safe
 
 
-  @retval  TRUE  The specified PKCS#7 signed data is valid.
-  @retval  FALSE Invalid PKCS#7 signed data.
-
+  @retval  TRUE  The certificate at the specified index was found and the pointer and length are valid
+  @retval  FALSE The certificate at the specified index was not found, the pointer and length are unchanged
 **/
 BOOLEAN
 EFIAPI
 Pkcs7GetCertificateByIndex(
   IN CONST UINT8  *Certificates,
-  IN UINTN        CertificatesLength,
-  IN UINTN        Index,
-  OUT UINT8       **Certificate,
-  OUT UINTN       *CertificateLength
+  IN       UINTN  CertificatesLength,
+  IN       INTN   Index,
+  OUT      UINT8  **Certificate,
+  OUT      UINTN  *CertificateLength
   ) {
-
-
     BOOLEAN Status;
     UINT8 CertCount;
+    UINT8 *Temp;
+    UINT32 CertLength;
 
     Status = FALSE;
 
-    if (Certificates == NULL || CertificateLength == NULL) {
+    if (Certificates == NULL || CertificatesLength == 0) {
       return FALSE;
     }
 
-    if (CertificatesLength > INT_MAX) {
-      return FALSE;
-    }
-
-    // is there atleast enough data for the cert count?
+    // Need at least 1 byte for the CertCount
     if (CertificatesLength < sizeof(CertCount)) {
       return FALSE;
     }
 
+    // CertCount is the first byte (UINT8)
     CertCount = Certificates[0];
 
-    if (Index > CertCount) {
+    // Determine if we would index past the end of the chain
+    // Index of -1 is valid, it means the last certificate in the chain    
+    if (Index > CertCount || Index < -1) {
       return FALSE;
     }
 
-    DEBUG((DEBUG_INFO, "CertCount: %d\n", CertCount));
-    UINT8 *Temp = Certificates + sizeof(CertCount);
+    // Skip the CertCount byte
+    Temp = Certificates + sizeof(CertCount);
 
     for (UINT8 i = 0; i < CertCount; i++) {
-      UINT32 CertLength;
 
       // is there enough data for the cert length?
       if (CertificatesLength < sizeof(CertLength)) {
         return FALSE;
       }
+
+      // get the cert length
       CertLength = *(UINT32*)Temp;
-      DEBUG((DEBUG_INFO, "CertLength: %d\n", CertLength));
       Temp += sizeof(CertLength);
 
       // is there enough data for the cert?
@@ -1010,7 +1008,8 @@ Pkcs7GetCertificateByIndex(
         return FALSE;
       }
 
-      if (i == Index) {
+      // if we are at the index we want, or if we are at the last cert and we want the last cert
+      if (i == Index || (Index == -1 && i == CertCount - 1)) {
         *Certificate = Temp;
         *CertificateLength = CertLength;
         Status = TRUE;

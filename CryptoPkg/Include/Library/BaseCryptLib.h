@@ -4185,13 +4185,41 @@ EcDsaVerify (
   IN  UINTN        SigSize
   );
 
-// TODO Fill me out
+/**
+  Takes a certificate chain created by Pkcs7GetCertificatesList or Pks7GetSigners and indexes into
+  the chain to find a certificate at a given index 
+
+  This is the expected format of the certificate chain format:
+       UINT8  CertNumber;
+       UINT32 Cert1Length;
+       UINT8  Cert1[];
+       UINT32 Cert2Length;
+       UINT8  Cert2[];
+       ...
+       UINT32 CertnLength;
+       UINT8  Certn[];
+  
+  @param[in]  Certificates       Pointer to the Certificate Chain to search, must not be NULL
+  @param[in]  CertificatesLength Length of the Certificate Chain in bytes, must be > 0
+  @param[in]  Index              Index of the certificate to retrieve, 0 is the top level certificate
+                                 and the highest index is the leaf certificate, -1 will return the leaf
+  @param[out] Certificate        Pointer to the certificate at the specified index, if index is valid
+                                 otherwise the pointer will be unchanged, check return value to see
+                                 if the pointer is safe to use
+  @param[out] CertificateLength  Length of the certificate at the specified index, if index is valid
+                                 otherwise unchanged, check return value to see if the length is safe
+
+
+  @retval  TRUE  The certificate at the specified index was found and the pointer and length are valid
+  @retval  FALSE The certificate at the specified index was not found, the pointer and length are unchanged
+  
+**/
 BOOLEAN
 EFIAPI
 Pkcs7GetCertificateByIndex(
   IN CONST UINT8  *Certificates,
   IN UINTN        CertificatesLength,
-  IN UINTN        Index,
+  IN INTN         Index,
   OUT UINT8       **Certificate,
   OUT UINTN       *CertificateLength
   );
