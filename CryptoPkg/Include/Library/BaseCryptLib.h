@@ -4185,4 +4185,15 @@ EcDsaVerify (
   IN  UINTN        SigSize
   );
 
+// TODO Fill me out
+BOOLEAN
+EFIAPI
+Pkcs7GetCertificateByIndex(
+  IN CONST UINT8  *Certificates,
+  IN UINTN        CertificatesLength,
+  IN UINTN        Index,
+  OUT UINT8       **Certificate,
+  OUT UINTN       *CertificateLength
+  );
+
 #endif // __BASE_CRYPT_LIB_H__
