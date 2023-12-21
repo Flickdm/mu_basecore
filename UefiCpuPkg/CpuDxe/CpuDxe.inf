@@ -33,7 +33,6 @@
   UefiBootServicesTableLib
   UefiDriverEntryPoint
   LocalApicLib
-  UefiCpuLib
   UefiLib
   CpuExceptionHandlerLib
   HobLib
@@ -43,6 +42,7 @@
   PeCoffGetEntryPointLib
   DxeMemoryProtectionHobLib ## MU_CHANGE
   DeviceStateLib            ## MU_CHANGE
+  PanicLib                  ## MU_CHANGE
 
 [Sources]
   CpuDxe.c

@@ -34,16 +34,6 @@
 
 [LibraryClasses]
   SafeIntLib|MdePkg/Library/BaseSafeIntLib/BaseSafeIntLib.inf
-  # MU_CHANGE START
-  BaseBinSecurityLib|MdePkg/Library/BaseBinSecurityLibNull/BaseBinSecurityLibNull.inf
-!if $(TOOL_CHAIN_TAG) == VS2019 or $(TOOL_CHAIN_TAG) == VS2022
-[LibraryClasses.X64]
-  # Provide StackCookie support lib so that we can link to /GS exports for VS builds
-  RngLib|MdePkg/Library/BaseRngLib/BaseRngLib.inf
-  BaseBinSecurityLib|MdePkg/Library/BaseBinSecurityLibRng/BaseBinSecurityLibRng.inf
-  NULL|MdePkg/Library/BaseBinSecurityLibRng/BaseBinSecurityLibRng.inf
-!endif
-# MU_CHANGE END
 
 [Components]
   MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
@@ -68,6 +58,8 @@
   MdePkg/Library/PciSegmentLibSegmentInfo/DxeRuntimePciSegmentLibSegmentInfo.inf
   MdePkg/Library/BaseS3PciSegmentLib/BaseS3PciSegmentLib.inf
   MdePkg/Library/BaseArmTrngLibNull/BaseArmTrngLibNull.inf
+  MdePkg/Library/BasePanicLibSerialPort/BasePanicLibSerialPort.inf  # MU_CHANGE
+  MdePkg/Library/BasePanicLibNull/BasePanicLibNull.inf  # MU_CHANGE
   MdePkg/Library/BasePeCoffGetEntryPointLib/BasePeCoffGetEntryPointLib.inf
   MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
   MdePkg/Library/BasePeCoffExtraActionLibNull/BasePeCoffExtraActionLibNull.inf
@@ -188,17 +180,18 @@
   MdePkg/Library/BaseS3StallLib/BaseS3StallLib.inf
   MdePkg/Library/SmmMemLib/SmmMemLib.inf
   MdePkg/Library/SmmIoLib/SmmIoLib.inf
-  ##MSCHANGE Begin
-!if $(TOOL_CHAIN_TAG) == VS2017 or $(TOOL_CHAIN_TAG) == VS2015 or $(TOOL_CHAIN_TAG) == VS2019 or $(TOOL_CHAIN_TAG) == VS2022
-  MdePkg/Library/BaseBinSecurityLibNull/BaseBinSecurityLibNull.inf
-  MdePkg/Library/BaseBinSecurityLibRng/BaseBinSecurityLibRng.inf
-!endif
-  ##MSCHANGE End
   MdePkg/Library/SmmPciExpressLib/SmmPciExpressLib.inf
   MdePkg/Library/SmiHandlerProfileLibNull/SmiHandlerProfileLibNull.inf
   MdePkg/Library/MmServicesTableLib/MmServicesTableLib.inf
   MdePkg/Library/MmUnblockMemoryLib/MmUnblockMemoryLibNull.inf
   MdePkg/Library/TdxLib/TdxLib.inf
+
+# MU_CHANGE [BEGIN] - Stack Cookie Support
+[Components.X64]
+  MdePkg/Library/StackCheckLib/StackCheckLib.inf
+  MdePkg/Library/StackCheckFailureLibNull/StackCheckFailureLibNull.inf
+  MdePkg/Library/StackCheckLibNull/StackCheckLibNull.inf
+# MU_CHANGE [END] - Add Stack Cookie Support
 
 
 

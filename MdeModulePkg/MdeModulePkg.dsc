@@ -116,8 +116,11 @@
   AdvLoggerAccessLib|MdeModulePkg/Library/AdvLoggerAccessLibNull/AdvLoggerAccessLib.inf                               ## MS_CHANGE
   MemoryTypeInfoSecVarCheckLib|MdeModulePkg/Library/MemoryTypeInfoSecVarCheckLib/MemoryTypeInfoSecVarCheckLib.inf     # MU_CHANGE TCBZ1086
   ExceptionPersistenceLib|MdeModulePkg/Library/BaseExceptionPersistenceLibNull/BaseExceptionPersistenceLibNull.inf # MU_CHANGE
+  DeviceStateLib|MdeModulePkg/Library/DeviceStateLib/DeviceStateLib.inf                                            # MU_CHANGE
 
   MmuLib|MdePkg/Library/BaseMmuLibNull/BaseMmuLibNull.inf       ## MU_CHANGE
+
+  PanicLib|MdePkg/Library/BasePanicLibNull/BasePanicLibNull.inf  # MU_CHANGE
 
 # MU_CHANGE START Include MemoryProtectionHobLib
 [LibraryClasses.common.DXE_DRIVER, LibraryClasses.common.DXE_CORE, LibraryClasses.common.UEFI_APPLICATION]
@@ -130,19 +133,6 @@
   MmMemoryProtectionHobLib|MdeModulePkg/Library/MemoryProtectionHobLib/StandaloneMmMemoryProtectionHobLib.inf
 
 # MU_CHANGE END
-
-##MSCHANGE Begin
-[LibraryClasses.common]
-  BaseBinSecurityLib|MdePkg/Library/BaseBinSecurityLibNull/BaseBinSecurityLibNull.inf
-!if $(TOOL_CHAIN_TAG) == VS2019 or $(TOOL_CHAIN_TAG) == VS2022
-[LibraryClasses.X64]
-  # Provide StackCookie support lib so that we can link to /GS exports for VS builds
-  RngLib|MdePkg/Library/BaseRngLib/BaseRngLib.inf
-[LibraryClasses.X64]
-  BaseBinSecurityLib|MdePkg/Library/BaseBinSecurityLibRng/BaseBinSecurityLibRng.inf
-  NULL|MdePkg/Library/BaseBinSecurityLibRng/BaseBinSecurityLibRng.inf
-!endif
-##MSCHANGE End
 
 [LibraryClasses.EBC.PEIM]
   IoLib|MdePkg/Library/PeiIoLibCpuIo/PeiIoLibCpuIo.inf

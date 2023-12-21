@@ -46,7 +46,6 @@
   SerialPortLib|MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.inf
   DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
   DevicePathLib|MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf
-  UefiCpuLib|UefiCpuPkg/Library/BaseUefiCpuLib/BaseUefiCpuLib.inf
   IoLib|MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.inf
   MtrrLib|UefiCpuPkg/Library/MtrrLib/MtrrLib.inf
   PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
@@ -86,16 +85,10 @@
   DxeMemoryProtectionHobLib|MdeModulePkg/Library/MemoryProtectionHobLibNull/DxeMemoryProtectionHobLibNull.inf
   MmMemoryProtectionHobLib|MdeModulePkg/Library/MemoryProtectionHobLibNull/MmMemoryProtectionHobLibNull.inf
   DeviceStateLib|MdeModulePkg/Library/DeviceStateLib/DeviceStateLib.inf
-  BaseBinSecurityLib|MdePkg/Library/BaseBinSecurityLibNull/BaseBinSecurityLibNull.inf
+
+  PanicLib|MdePkg/Library/BasePanicLibNull/BasePanicLibNull.inf   # MU_CHANGE
 [LibraryClasses.X64, LibraryClasses.IA32]
   HwResetSystemLib|MdeModulePkg/Library/BaseResetSystemLibNull/BaseResetSystemLibNull.inf
-!if $(TOOL_CHAIN_TAG) == VS2019 or $(TOOL_CHAIN_TAG) == VS2022
-[LibraryClasses.X64]
-  # Provide StackCookie support lib so that we can link to /GS exports for VS builds
-  RngLib|MdePkg/Library/BaseRngLib/BaseRngLib.inf
-  BaseBinSecurityLib|MdePkg/Library/BaseBinSecurityLibRng/BaseBinSecurityLibRng.inf
-  NULL|MdePkg/Library/BaseBinSecurityLibRng/BaseBinSecurityLibRng.inf
-!endif
 ##MSCHANGE End
 
 [LibraryClasses.common.SEC]
@@ -179,7 +172,6 @@
   UefiCpuPkg/CpuIo2Smm/CpuIo2StandaloneMm.inf
   UefiCpuPkg/CpuMpPei/CpuMpPei.inf
   UefiCpuPkg/CpuS3DataDxe/CpuS3DataDxe.inf
-  UefiCpuPkg/Library/BaseUefiCpuLib/BaseUefiCpuLib.inf
   UefiCpuPkg/Library/BaseXApicLib/BaseXApicLib.inf
   UefiCpuPkg/Library/BaseXApicX2ApicLib/BaseXApicX2ApicLib.inf
   UefiCpuPkg/Library/CpuCommonFeaturesLib/CpuCommonFeaturesLib.inf

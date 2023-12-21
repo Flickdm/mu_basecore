@@ -8,15 +8,14 @@
 ##
 
 
-import logging
-import os
-import io
-import sys
-from datetime import datetime
-import subprocess
 import argparse
 import hashlib
+import io
+import logging
+import os
 import re
+import sys
+from datetime import datetime, timezone
 from io import StringIO
 
 #
@@ -25,11 +24,12 @@ from io import StringIO
 #
 #
 try:
-    from edk2toolext.environment.plugintypes.uefi_build_plugin import IUefiBuildPlugin
-    from edk2toollib.uefi.edk2.parsers.inf_parser import InfParser
-    from edk2toollib.utility_functions import RunCmd
+    from edk2toolext.environment.plugintypes.uefi_build_plugin import \
+        IUefiBuildPlugin
     from edk2toollib.uefi.edk2.parsers.dsc_parser import *
+    from edk2toollib.uefi.edk2.parsers.inf_parser import InfParser
     from edk2toollib.uefi.edk2.path_utilities import Edk2Path
+    from edk2toollib.utility_functions import RunCmd
 
     #Tuple for (version, entrycount)
     FORMAT_VERSION_1 = (1, 4)   #Version 1: #OVERRIDE : VERSION | PATH_TO_MODULE | HASH | YYYY-MM-DDThh-mm-ss
@@ -106,9 +106,7 @@ try:
             result = self.OverrideResult.OR_ALL_GOOD
             InfFileList = self.get_dsc_inf_list(thebuilder)
 
-            ws = thebuilder.ws
-            pp = thebuilder.pp.split(os.pathsep)
-            self.PathTool = Edk2Path(ws, pp)
+            self.PathTool = thebuilder.edk2path
 
             if (InfFileList == []):
                 return result
@@ -120,7 +118,7 @@ try:
             for file in InfFileList:
                 temp_list = []
                 modulenode = self.ModuleNode(file, self.OverrideResult.OR_ALL_GOOD, 0)
-                fullpath = thebuilder.mws.join(thebuilder.ws, file)
+                fullpath = thebuilder.edk2path.GetAbsolutePathOnThisSystemFromEdk2RelativePath(file)
 
                 m_result = self.override_detect_process(thebuilder, fullpath, temp_list, modulenode, status)
                 # Do not log the module that does not have any override records
@@ -291,9 +289,9 @@ try:
             # Step 2: Process the path to overridden module
             # Normalize the path to support different slashes, then strip the initial '\\' to make sure os.path.join will work correctly
             overriddenpath = os.path.normpath(OverrideEntry[1].strip()).strip('\\')
-            fullpath = os.path.normpath(thebuilder.mws.join(thebuilder.ws, overriddenpath))
+            fullpath = thebuilder.edk2path.GetAbsolutePathOnThisSystemFromEdk2RelativePath(overriddenpath, log_errors=False)
             # Search overridden module in workspace
-            if not os.path.isfile(fullpath) and not os.path.isdir(fullpath):
+            if fullpath is None:
                 logging.info("Inf Overridden File/Path Not Found in Workspace or Packages_Path: %s" %(overriddenpath))
                 result = self.OverrideResult.OR_TARGET_INF_NOT_FOUND
                 m_node.path = overriddenpath
@@ -306,6 +304,7 @@ try:
             # Step 4: Parse the time of hash generation
             try:
                 EntryTimestamp = datetime.strptime(OverrideEntry[3].strip(), "%Y-%m-%dT%H-%M-%S")
+                EntryTimestamp = EntryTimestamp.replace(tzinfo=timezone.utc)
             except ValueError:
                 logging.error("Inf Override Parse Error, override parameter has invalid timestamp %s" %(OverrideEntry[3].strip()))
                 result = self.OverrideResult.OR_INVALID_FORMAT
@@ -320,7 +319,7 @@ try:
             # Step 6: House keeping
             # Process the path to workspace/package path based add it to the parent node
             overridden_rel_path = self.PathTool.GetEdk2RelativePathFromAbsolutePath(fullpath)
-            date_delta = datetime.utcnow() - EntryTimestamp
+            date_delta = datetime.now(timezone.utc) - EntryTimestamp
 
             m_node.entry_hash = EntryHash
             m_node.path = overridden_rel_path
@@ -354,8 +353,8 @@ try:
             # if we failed, do a diff of the overridden file (as long as exist) and show the output
             if result != self.OverrideResult.OR_ALL_GOOD and result != self.OverrideResult.OR_TARGET_INF_NOT_FOUND:
                 overriddenpath = os.path.normpath(OverrideEntry[1].strip()).strip('\\')
-                fullpath = os.path.normpath(thebuilder.mws.join(thebuilder.ws, overriddenpath))
-                if os.path.exists(fullpath):
+                fullpath = thebuilder.edk2path.GetAbsolutePathOnThisSystemFromEdk2RelativePath(overriddenpath, log_errors=False)
+                if fullpath is not None:
                     patch = ModuleGitPatch(fullpath, GitHash)
                     # TODO: figure out how to get the log file
                 pnt_str = f"Override diff since last update at commit {GitHash}"
@@ -403,7 +402,7 @@ try:
             with open(logfile, 'w') as log:
                 log.write("Platform:     %s\n" %(thebuilder.env.GetValue("PRODUCT_NAME")))
                 log.write("Version:      %s\n" %(thebuilder.env.GetValue("BLD_*_BUILDID_STRING")))
-                log.write("Date:         %s\n" %(datetime.utcnow().strftime("%Y-%m-%dT%H-%M-%S")))
+                log.write("Date:         %s\n" %(datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")))
                 log.write("Commit:       %s\n" %(thebuilder.env.GetValue("BLD_*_BUILDSHA")))
                 log.write("State:        %d/%d\n" %(status[0], status[1]))
 
@@ -429,7 +428,7 @@ try:
         # stack: the stack of paths collected during a dfs for loop detection, should be absolute path and lower case all the time
         # log: log file object, must be readily open for file write when called
         def node_dfs(self, thebuilder, node, stack, log):
-            fullpath = os.path.normpath(thebuilder.mws.join(thebuilder.ws, node.path)).lower()
+            fullpath = os.path.normpath(thebuilder.edk2path.GetAbsolutePathOnThisSystemFromEdk2RelativePath(node.path)).lower()
             if (node.path in stack):
                 return
             stack.append(fullpath)
@@ -458,19 +457,19 @@ try:
             logging.debug("Parse Active Platform DSC file")
             input_vars = thebuilder.env.GetAllBuildKeyValues()
             input_vars["TARGET"] = thebuilder.env.GetValue("TARGET")
-            dscp = DscParser().SetEdk2Path(Edk2Path(thebuilder.ws, thebuilder.pp.split(os.pathsep))).SetInputVars(input_vars)
+            dscp = DscParser().SetEdk2Path(thebuilder.edk2path).SetInputVars(input_vars)
             plat_dsc = thebuilder.env.GetValue("ACTIVE_PLATFORM")
             if (plat_dsc is None):
                 return InfFileList
 
             # Parse the DSC
-            pa = thebuilder.mws.join(thebuilder.ws, plat_dsc)
+            pa = thebuilder.edk2path.GetAbsolutePathOnThisSystemFromEdk2RelativePath(plat_dsc)
             dscp.ParseFile(pa)
             # Add the DSC itself (including all the includes)
             InfFileList.extend(dscp.GetAllDscPaths())
             # Add the FDF
             if "FLASH_DEFINITION" in dscp.LocalVars:
-                fd = thebuilder.mws.join(thebuilder.ws, dscp.LocalVars["FLASH_DEFINITION"])
+                fd = thebuilder.edk2path.GetAbsolutePathOnThisSystemFromEdk2RelativePath(dscp.LocalVars["FLASH_DEFINITION"])
                 InfFileList.append(fd)
             # Here we collect all the reference libraries, IA-32 modules, x64 modules and other modules
             if (dscp.Parsed) :
@@ -672,10 +671,10 @@ if __name__ == '__main__':
                         VERSION_INDEX = Paths.Version - 1
 
                         if VERSION_INDEX == 0:
-                            line = '#%s : %08d | %s | %s | %s\n' % (match.group(1), FORMAT_VERSION_1[0], rel_path, mod_hash, datetime.utcnow().strftime("%Y-%m-%dT%H-%M-%S"))
+                            line = '#%s : %08d | %s | %s | %s\n' % (match.group(1), FORMAT_VERSION_1[0], rel_path, mod_hash, datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S"))
                         elif VERSION_INDEX == 1:
                             git_hash = ModuleGitHash(abs_path)
-                            line = '#%s : %08d | %s | %s | %s | %s\n' % (match.group(1), FORMAT_VERSION_2[0], rel_path, mod_hash, datetime.utcnow().strftime("%Y-%m-%dT%H-%M-%S"), git_hash)
+                            line = '#%s : %08d | %s | %s | %s | %s\n' % (match.group(1), FORMAT_VERSION_2[0], rel_path, mod_hash, datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S"), git_hash)
                         print("Updating:\n" + line)
                 else:
                     print(f"Warning: Could not resolve relative path {rel_path}. Override line not updated.\n")
@@ -707,9 +706,9 @@ if __name__ == '__main__':
 
         if VERSION_INDEX == 0:
             print("Copy and paste the following line(s) to your overrider inf file(s):\n")
-            print('#%s : %08d | %s | %s | %s' % ("Override" if not Paths.Track else "Track", FORMAT_VERSION_1[0], rel_path, mod_hash, datetime.utcnow().strftime("%Y-%m-%dT%H-%M-%S")))
+            print('#%s : %08d | %s | %s | %s' % ("Override" if not Paths.Track else "Track", FORMAT_VERSION_1[0], rel_path, mod_hash, datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")))
 
         elif VERSION_INDEX == 1:
             git_hash = ModuleGitHash(Paths.TargetPath)
             print("Copy and paste the following line(s) to your overrider inf file(s):\n")
-            print('#%s : %08d | %s | %s | %s | %s' % ("Override" if not Paths.Track else "Track", FORMAT_VERSION_2[0], rel_path, mod_hash, datetime.utcnow().strftime("%Y-%m-%dT%H-%M-%S"), git_hash))
+            print('#%s : %08d | %s | %s | %s | %s' % ("Override" if not Paths.Track else "Track", FORMAT_VERSION_2[0], rel_path, mod_hash, datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S"), git_hash))
