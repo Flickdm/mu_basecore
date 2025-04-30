@@ -1,0 +1,16 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = SharedCryptoDxe
+  FILE_GUID                      = FBF68669-8C12-43CA-B2A6-66C8C5CEFDA0
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = DxeEntryPoint
+
+[Binaries.X64]
+  PE32|SharedCryptoDxe.efi
+  DXE_DEPEX|SharedCryptoDxe.depex
+
+[Packages]
+
+[Depex]
+  TRUE
