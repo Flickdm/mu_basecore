@@ -1,0 +1,9 @@
+{
+  "scope": "global",
+  "type": "nuget",
+  "name": "edk2-sharedcrypto-driver-bin",
+  "source": "TODO",
+  "version": "2025.1.0",
+  "flags": ["set_build_var"],
+  "var_name": "BLD_*_SHARED_CRYPTO_PATH"
+}
