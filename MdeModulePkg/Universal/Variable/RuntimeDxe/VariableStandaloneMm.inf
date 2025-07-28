@@ -64,6 +64,7 @@
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
   StandaloneMmPkg/StandaloneMmPkg.dec
+  CryptoPkg/SharedCryptoPkg.dec
 
 [LibraryClasses]
   AdvLoggerAccessLib                            ## MU_CHANGE
@@ -145,4 +146,4 @@
   gEfiMdePkgTokenSpaceGuid.PcdUefiVariableDefaultLangDeprecate       ## CONSUMES  # Auto update PlatformLang/Lang
 
 [Depex]
-  TRUE
+  gSharedCryptoMmProtocolGuid

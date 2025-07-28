@@ -11,9 +11,9 @@
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
 #include <Library/MmServicesTableLib.h>
-#include <Protocol/SmmCrypto.h>
+#include <Protocol/SmmSharedCrypto.h>
 
-EDKII_SMM_CRYPTO_PROTOCOL  *mSmmCryptoProtocol = NULL;
+SHARED_CRYPTO_PROTOCOL  *mSmmCryptoProtocol = NULL;
 
 /**
   Internal worker function that returns the pointer to an EDK II Crypto
@@ -52,10 +52,9 @@ StandaloneMmCryptLibConstructor (
   )
 {
   EFI_STATUS  Status;
-  UINTN       Version;
 
   Status = gMmst->MmLocateProtocol (
-                    &gEdkiiSmmCryptoProtocolGuid,
+                    &gSharedCryptoMmProtocolGuid,
                     NULL,
                     (VOID **)&mSmmCryptoProtocol
                     );
@@ -67,13 +66,13 @@ StandaloneMmCryptLibConstructor (
     return EFI_NOT_FOUND;
   }
 
+  /* // TODO REWORK
   Version = mSmmCryptoProtocol->GetVersion ();
-  if (Version != EDKII_CRYPTO_VERSION) {
+  if (Version != SHARED_CRYPTO_PROTOCOL) {
     DEBUG ((DEBUG_ERROR, "[StandaloneMmCryptLib] Crypto SMM Protocol unsupported version %d\n", Version));
-    ASSERT (Version == EDKII_CRYPTO_VERSION);
     mSmmCryptoProtocol = NULL;
     return EFI_NOT_FOUND;
-  }
+  }*/
 
   return EFI_SUCCESS;
 }
