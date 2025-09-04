@@ -4307,4 +4307,22 @@ EcDsaVerify (
   IN  UINTN        SigSize
   );
 
+/**
+  Return the OpenSSL algorithm name for the ML-DSA parameter set.
+
+  @param[in]  MlDsaNid   Identifying number for the ML-DSA parameter set (Defined in
+                         BaseCryptLib.h).
+
+  @retval     Algorithm name string for OpenSSL.
+  @retval     NULL if parameter set not supported.
+**/
+
+
+CONST CHAR8 *
+EFIAPI
+MlDsaNidToOpensslAlgName (
+  IN UINTN  MlDsaNid
+  );
+
+
 #endif // __BASE_CRYPT_LIB_H__
