@@ -167,7 +167,7 @@ class WindowsVsToolChain(IUefiBuildPlugin):
                 shell_env = shell_environment.GetEnvironment()
                 # Use the tools lib to determine the correct values for the vars that interest us.
                 vs_vars = locate_tools.QueryVcVariables(
-                    interesting_keys, VC_HOST_ARCH_TRANSLATOR[HostType], vs_version="vs2019", vc_version=vc_ver)
+                    interesting_keys, VC_HOST_ARCH_TRANSLATOR[HostType], vs_version="vs2019")
                 for (k, v) in vs_vars.items():
                     shell_env.set_shell_var(k, v)
 
@@ -247,7 +247,7 @@ class WindowsVsToolChain(IUefiBuildPlugin):
                 shell_env = shell_environment.GetEnvironment()
                 # Use the tools lib to determine the correct values for the vars that interest us.
                 vs_vars = locate_tools.QueryVcVariables(
-                    interesting_keys, VC_HOST_ARCH_TRANSLATOR[HostType], vs_version="VS2022", vc_version=vc_ver)
+                    interesting_keys, VC_HOST_ARCH_TRANSLATOR[HostType], vs_version="VS2022")
                 for (k, v) in vs_vars.items():
                     shell_env.set_shell_var(k, v)
 
