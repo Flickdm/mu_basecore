@@ -34,9 +34,9 @@ $symlinkDefinitions = @{
     Binaries = @{
         BasePath = "$binariesDir\edk2-sharedcrypto-driver-bin\bin\shared"
         Links = @(
-            @{ Source = "\Build\OpensslLibPkg\DEBUG_VS2022\X64\SharedCryptoMmBin.efi"; Name = "SharedCryptoMmBin.efi" }
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Support\SharedCryptoMm.inf"; Name = "SharedCryptoMmBin.inf" }
-            @{ Source = "\Build\OpensslLibPkg\DEBUG_VS2022\X64\OpensslPkg\Library\SharedCryptLib\SharedCryptoMmBin\OUTPUT\SharedCryptoMmBin.depex"; Name = "SharedCryptoMmBin.depex" }
+            @{ Source = "\Build\CryptoPkg\DEBUG_VS2022\X64\SharedCryptoMmBin.efi"; Name = "SharedCryptoMmBin.efi" }
+            @{ Source = "\CryptoPkg\SharedCryptoBin\Support\SharedCryptoMm.inf"; Name = "SharedCryptoMmBin.inf" }
+            @{ Source = "\Build\CryptoPkg\DEBUG_VS2022\X64\CryptoPkg\SharedCryptoBin\SharedCryptoMmBin\OUTPUT\SharedCryptoMmBin.depex"; Name = "SharedCryptoMmBin.depex" }
         )
     }
     
@@ -44,7 +44,7 @@ $symlinkDefinitions = @{
     Driver = @{
         BasePath = "$binariesDir\edk2-sharedcrypto-driver-bin\src"
         Links = @(
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Driver"; Name = "driver" }
+            @{ Source = "CryptoPkg\Driver"; Name = "driver" }
         )
     }
     
@@ -52,10 +52,10 @@ $symlinkDefinitions = @{
     SupportFiles = @{
         BasePath = "$binariesDir\edk2-sharedcrypto-driver-bin"
         Links = @(
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Support\SharedCrypto.CryptoBinary.inc.fdf"; Name = "SharedCrypto.CryptoBinary.inc.fdf" }
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Support\SharedCrypto.Dxe.inc.fdf"; Name = "SharedCrypto.Dxe.inc.fdf" }
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Support\SharedCrypto.inc.dsc"; Name = "SharedCrypto.inc.dsc" }
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Support\SharedCrypto.StandaloneMm.inc.fdf"; Name = "SharedCrypto.StandaloneMm.inc.fdf" }
+            @{ Source = "\CryptoPkg\SharedCryptoBin\Support\SharedCrypto.CryptoBinary.inc.fdf"; Name = "SharedCrypto.CryptoBinary.inc.fdf" }
+            @{ Source = "\CryptoPkg\SharedCryptoBin\Support\SharedCrypto.Dxe.inc.fdf"; Name = "SharedCrypto.Dxe.inc.fdf" }
+            @{ Source = "\CryptoPkg\SharedCryptoBin\Support\SharedCrypto.inc.dsc"; Name = "SharedCrypto.inc.dsc" }
+            @{ Source = "\CryptoPkg\SharedCryptoBin\Support\SharedCrypto.StandaloneMm.inc.fdf"; Name = "SharedCrypto.StandaloneMm.inc.fdf" }
         )
     }
     
@@ -63,9 +63,9 @@ $symlinkDefinitions = @{
     IncludeLibrary = @{
         BasePath = "$cryptoPkgDir\Include\Library"
         Links = @(
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Include\Library\SharedCryptoDefinitions.h"; Name = "SharedCryptoDefinitions.h" }
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Include\Library\SharedCryptoDependencySupport.h"; Name = "SharedCryptoDependencySupport.h" }
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Include\Library\SharedCryptoLib.h"; Name = "SharedCryptoLib.h" }
+            @{ Source = "\CryptoPkg\Include\Library\SharedCryptoDefinitions.h"; Name = "SharedCryptoDefinitions.h" }
+            @{ Source = "\CryptoPkg\Include\Library\SharedCryptoDependencySupport.h"; Name = "SharedCryptoDependencySupport.h" }
+            @{ Source = "\CryptoPkg\Include\Library\SharedCryptoLib.h"; Name = "SharedCryptoLib.h" }
         )
     }
     
@@ -73,7 +73,7 @@ $symlinkDefinitions = @{
     IncludeProtocol = @{
         BasePath = "$cryptoPkgDir\Include\Protocol"
         Links = @(
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Include\Protocol\SharedCryptoProtocol.h"; Name = "SharedCryptoProtocol.h" }
+            @{ Source = "\CryptoPkg\Include\Protocol\SharedCryptoProtocol.h"; Name = "SharedCryptoProtocol.h" }
         )
     }
     
@@ -81,7 +81,7 @@ $symlinkDefinitions = @{
     LibraryImplementation = @{
         BasePath = "$cryptoPkgDir\Library\BaseCryptLibOnProtocolPpi"
         Links = @(
-            @{ Source = "\OpensslPkg\Library\SharedCryptLib\Library\BaseCryptLibOnProtocolPpi\SharedCryptoLib.c"; Name = "SharedCryptoLib.c" }
+            @{ Source = "\CryptoPkg\Library\BaseCryptLibOnProtocolPpi\SharedCryptoLib.c"; Name = "SharedCryptoLib.c" }
         )
     }
 

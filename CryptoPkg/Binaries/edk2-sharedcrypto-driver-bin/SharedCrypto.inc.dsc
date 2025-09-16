@@ -1,1 +1,1 @@
-C:/git/flickdm/mu_crypto_release/OpensslPkg/Library/SharedCryptLib/Support/SharedCrypto.inc.dsc
+C:/git/flickdm/mu_crypto_release/CryptoPkg/SharedCryptoBin/Support/SharedCrypto.inc.dsc
