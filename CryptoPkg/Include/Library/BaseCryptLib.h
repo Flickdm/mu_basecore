@@ -90,6 +90,37 @@ typedef enum {
   RsaKeyQInv    ///< The CRT coefficient (== 1/q mod p)
 } RSA_KEY_TAG;
 
+/**
+  The 3rd parameter of Pkcs7GetSigners will return all embedded
+  X.509 certificate in one given PKCS7 signature. The format is:
+  //
+  // UINT8  CertNumber;
+  // UINT32 Cert1Length;
+  // UINT8  Cert1[];
+  // UINT32 Cert2Length;
+  // UINT8  Cert2[];
+  // ...
+  // UINT32 CertnLength;
+  // UINT8  Certn[];
+  //
+
+  The two following C-structure are used for parsing CertStack more clearly.
+**/
+#pragma pack(1)
+
+typedef struct {
+  UINT32    CertDataLength;       // The length in bytes of X.509 certificate.
+  UINT8     CertDataBuffer[0];    // The X.509 certificate content (DER).
+} EFI_CERT_DATA;
+
+typedef struct {
+  UINT8    CertNumber;            // Number of X.509 certificate.
+  // EFI_CERT_DATA   CertArray[];  // An array of X.509 certificate.
+} EFI_CERT_STACK;
+
+#pragma pack()
+
+
 // =====================================================================================
 //    One-Way Cryptographic Hash Primitives
 // =====================================================================================
@@ -2274,36 +2305,6 @@ RsaOaepDecrypt (
   );
 
 /**
-  The 3rd parameter of Pkcs7GetSigners will return all embedded
-  X.509 certificate in one given PKCS7 signature. The format is:
-  //
-  // UINT8  CertNumber;
-  // UINT32 Cert1Length;
-  // UINT8  Cert1[];
-  // UINT32 Cert2Length;
-  // UINT8  Cert2[];
-  // ...
-  // UINT32 CertnLength;
-  // UINT8  Certn[];
-  //
-
-  The two following C-structure are used for parsing CertStack more clearly.
-**/
-#pragma pack(1)
-
-typedef struct {
-  UINT32    CertDataLength;       // The length in bytes of X.509 certificate.
-  UINT8     CertDataBuffer[0];    // The X.509 certificate content (DER).
-} EFI_CERT_DATA;
-
-typedef struct {
-  UINT8    CertNumber;            // Number of X.509 certificate.
-  // EFI_CERT_DATA   CertArray[];  // An array of X.509 certificate.
-} EFI_CERT_STACK;
-
-#pragma pack()
-
-/**
   Get the signer's certificates from PKCS#7 signed data as described in "PKCS #7:
   Cryptographic Message Syntax Standard". The input signed data could be wrapped
   in a ContentInfo structure.
@@ -4355,6 +4356,33 @@ EcDsaVerify (
   IN  UINTN        HashSize,
   IN  CONST UINT8  *Signature,
   IN  UINTN        SigSize
+  );
+
+// =====================================================================================
+//    Cryptographic Provider Information
+// =====================================================================================
+
+/**
+  Gets the cryptographic provider version information.
+  
+  This function returns the version string of the cryptographic provider
+  (e.g., OpenSSL, MbedTLS, SymCrypt) that was used to compile the library.
+  
+  @param[out]     Buffer       Pointer to the buffer to receive the version string.
+                               If NULL, the required buffer size is returned in BufferSize.
+  @param[in,out]  BufferSize   On input, the size of the buffer in bytes.
+                               On output, the size of the data copied to the buffer (including null terminator).
+                               If Buffer is NULL, returns the required buffer size.
+
+  @retval  EFI_SUCCESS            The version string was successfully copied to the buffer.
+  @retval  EFI_BUFFER_TOO_SMALL   The buffer is too small. BufferSize contains the required size.
+  @retval  EFI_INVALID_PARAMETER  BufferSize is NULL.
+**/
+EFI_STATUS
+EFIAPI
+GetCryptoProviderVersionText (
+  OUT    CHAR8   *Buffer,
+  IN OUT UINTN   *BufferSize
   );
 
 #endif // __BASE_CRYPT_LIB_H__
