@@ -1,0 +1,12 @@
+{
+  "scope": "global",
+  "type": "web",
+  "name": "edk2-onecrypto-driver-bin",
+  "source": "http://localhost:8000/Mu_CryptoBin_v1_0_0.zip",
+  "version": "1.0.0",
+  "sha256": "428c9df64b427e7956cafe32562e47634c242b6003a00a95230416491734c6a5",
+  "compression_type": "zip",
+  "internal_path": "/",
+  "flags": ["set_build_var"],
+  "var_name": "BLD_*_ONE_CRYPTO_PATH"
+}
