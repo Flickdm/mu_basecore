@@ -1,0 +1,30 @@
+## @file
+#  Null implementation of RealTimeClockLib.
+#
+#  This library provides stub implementations of the RealTimeClock
+#  library class functions that return EFI_UNSUPPORTED.
+#
+#  Copyright (c) 2025, Microsoft Corporation. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = RealTimeClockLibNull
+  FILE_GUID                      = 5765CB76-E349-4B63-B81D-6B2F1D0E1C85
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = RealTimeClockLib
+
+[Sources]
+  RealTimeClockLibNull.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
