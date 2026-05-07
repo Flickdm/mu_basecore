@@ -4488,10 +4488,12 @@ X509ConstructCertificateStack (
   )
 {
   VA_LIST  Args;
+  BOOLEAN  Result;
 
   VA_START (Args, X509Stack);
-  CALL_CRYPTO_SERVICE (X509ConstructCertificateStack, (X509Stack, Args), FALSE, 1, 0);
+  Result = X509ConstructCertificateStackV (X509Stack, Args);
   VA_END (Args);
+  return Result;
 }
 
 /**
