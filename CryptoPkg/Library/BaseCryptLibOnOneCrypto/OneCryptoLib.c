@@ -4457,6 +4457,21 @@ X509ConstructCertificateStackV (
   IN      VA_LIST  Args
   )
 {
+  // MU_CHANGE [BEGIN] - Debug: dump VA_LIST representation to diagnose cross-binary mismatch
+  {
+    UINTN  Idx;
+    UINT8  *RawBytes;
+
+    DEBUG ((DEBUG_ERROR, "SHIM: sizeof(VA_LIST) = %u\n", sizeof (VA_LIST)));
+    RawBytes = (UINT8 *)&Args;
+    DEBUG ((DEBUG_ERROR, "SHIM: VA_LIST raw bytes:"));
+    for (Idx = 0; Idx < sizeof (VA_LIST) && Idx < 40; Idx++) {
+      DEBUG ((DEBUG_ERROR, " %02X", RawBytes[Idx]));
+    }
+
+    DEBUG ((DEBUG_ERROR, "\n"));
+  }
+  // MU_CHANGE [END]
   CALL_CRYPTO_SERVICE (X509ConstructCertificateStackV, (X509Stack, Args), FALSE, 1, 0);
 }
 
