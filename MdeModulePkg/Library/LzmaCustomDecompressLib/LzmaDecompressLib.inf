@@ -1,0 +1,32 @@
+## @file
+#  LzmaDecompressLib produces the LzmaDecompressLib class, exposing direct LZMA
+#  decompression (LzmaUefiDecompressGetInfo / LzmaUefiDecompress) to consumers.
+#
+#  Unlike LzmaCustomDecompressLib.inf (a NULL library whose constructor registers
+#  a guided-section handler with ExtractGuidedSectionLib), this instance exposes
+#  the decode entry points directly so a consumer can expand a raw LZMA stream.
+#
+#  Copyright (c) Microsoft Corporation.
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = LzmaDecompressLib
+  FILE_GUID                      = 7F3B9A64-2C1D-4E8A-9B57-1A2C3D4E5F60
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = LzmaDecompressLib
+
+[Sources]
+  LzmaDecompress.c
+  Sdk/C/LzmaDec.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib

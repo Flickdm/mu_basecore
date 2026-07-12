@@ -32,6 +32,11 @@
   Core/PrivateInclude
 
 [LibraryClasses]
+  # MU_CHANGE [BEGIN] - Expose direct LZMA decompression as a consumable library class.
+  ##  @libraryclass  Provides direct LZMA decompression (LzmaUefiDecompress / LzmaUefiDecompressGetInfo).
+  LzmaDecompressLib|Include/Library/LzmaDecompressLib.h
+  # MU_CHANGE [END] - Expose direct LZMA decompression as a consumable library class.
+
   # MU_CHANGE [BEGIN] - Isolate the VariablePolicy locking event into its own code.
   ##  @libraryclass  A NULL library instance that can be linked against Variable Services
   #                   to allow the platform to hook pre- and post- VariablePolicy locking.
