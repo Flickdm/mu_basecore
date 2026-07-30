@@ -1346,7 +1346,7 @@ UINTN  mAuthenticodeTestNum = ARRAY_SIZE (mAuthenticodeTest);
 #ifdef ENABLE_PERF_BENCHMARKS
 //
 // Sample inputs exported for the Authenticode performance benchmarks
-// (PerformanceBenchmarkTests.c): an RSA-2048 / SHA-256 signature verifying
+// (AuthenticodePerfTests.c): an RSA-2048 / SHA-256 signature verifying
 // against TestRootCert2 with the sample PE/COFF image hash.
 //
 GLOBAL_REMOVE_IF_UNREFERENCED CONST UINT8  *mPerfAuthData         = AuthenticodeWithSha256;

@@ -71,8 +71,8 @@ extern TEST_DESC  mPkcs5Test[];
 extern UINTN      mAuthenticodeTestNum;
 extern TEST_DESC  mAuthenticodeTest[];
 #ifdef ENABLE_PERF_BENCHMARKS
-extern UINTN      mPerfBenchmarkTestNum;
-extern TEST_DESC  mPerfBenchmarkTest[];
+extern UINTN      mAuthenticodePerfTestNum;
+extern TEST_DESC  mAuthenticodePerfTest[];
 #endif
 
 extern UINTN      mImageTimestampTestNum;

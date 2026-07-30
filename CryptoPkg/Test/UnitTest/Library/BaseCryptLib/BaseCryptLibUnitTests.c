@@ -41,7 +41,7 @@ SUITE_DESC  mSuiteDesc[] = {
   // MU_CHANGE [END]
  #ifdef ENABLE_PERF_BENCHMARKS
   // MU_CHANGE [BEGIN] - Authenticode performance benchmarks (opt-in via ENABLE_PERF_BENCHMARKS)
-  { "Authenticode performance benchmarks", "CryptoPkg.BaseCryptLib.Perf", NULL, NULL, &mPerfBenchmarkTestNum,             mPerfBenchmarkTest             },
+  { "Authenticode performance benchmarks", "CryptoPkg.BaseCryptLib.Perf", NULL, NULL, &mAuthenticodePerfTestNum,             mAuthenticodePerfTest             },
   // MU_CHANGE [END]
  #endif
 };
