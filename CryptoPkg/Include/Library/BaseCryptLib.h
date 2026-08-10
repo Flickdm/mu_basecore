@@ -2428,6 +2428,10 @@ Pkcs7Sign (
   @retval  FALSE Invalid PKCS#7 signed data.
   @retval  FALSE This interface is not supported.
 
+  @note  LEGACY. Prefer CmsVerify(), the going-forward PKCS#7/CMS SignedData
+         verification interface. Pkcs7Verify() is equivalent to CmsVerify()
+         called with SignerChain == NULL and will eventually be deprecated.
+
 **/
 BOOLEAN
 EFIAPI
@@ -2438,6 +2442,55 @@ Pkcs7Verify (
   IN  UINTN        CertLength,
   IN  CONST UINT8  *InData,
   IN  UINTN        DataLength
+  );
+
+/**
+  Verify a PKCS#7/CMS SignedData structure and, when requested, return the
+  signer's cryptographically-verified certificate chain (signer..anchor) in
+  EFI_CERT_STACK form.
+
+  CmsVerify() is the going-forward replacement for Pkcs7Verify(). It accepts
+  the same PKCS#7/CMS SignedData inputs, and additionally can return the
+  verified signer certificate chain -- the chain the underlying verifier
+  actually built and used -- so a caller can perform per-certificate
+  revocation (dbx) checks without a second, redundant chain-building pass
+  over the same signature. Pkcs7Verify() is retained as a legacy wrapper
+  (equivalent to CmsVerify() with SignerChain == NULL).
+
+  If P7Data, TrustedCert or InData is NULL, then return FALSE.
+  If P7Length, CertLength or DataLength overflow, then return FALSE.
+  If this interface is not supported, then return FALSE.
+
+  @param[in]   P7Data          Pointer to the PKCS#7/CMS SignedData message.
+  @param[in]   P7Length        Length of P7Data in bytes.
+  @param[in]   TrustedCert     Pointer to a trusted/root certificate encoded
+                               in DER, used for certificate chain verification.
+  @param[in]   CertLength      Length of TrustedCert in bytes.
+  @param[in]   InData          Pointer to the content to be verified.
+  @param[in]   DataLength      Length of InData in bytes.
+  @param[out]  SignerChain     Optional. On TRUE, receives a newly allocated
+                               EFI_CERT_STACK ordered signer..anchor; caller
+                               frees with FreePool(). NULL to skip chain
+                               extraction.
+  @param[out]  SignerChainSize Optional. Receives the SignerChain length in
+                               bytes.
+
+  @retval TRUE   The specified PKCS#7/CMS signed data is valid.
+  @retval FALSE  Invalid PKCS#7/CMS signed data, or this interface (or the
+                 requested signer-chain output) is not supported.
+
+**/
+BOOLEAN
+EFIAPI
+CmsVerify (
+  IN  CONST UINT8  *P7Data,
+  IN  UINTN        P7Length,
+  IN  CONST UINT8  *TrustedCert,
+  IN  UINTN        CertLength,
+  IN  CONST UINT8  *InData,
+  IN  UINTN        DataLength,
+  OUT UINT8        **SignerChain      OPTIONAL,
+  OUT UINTN        *SignerChainSize   OPTIONAL
   );
 
 /**

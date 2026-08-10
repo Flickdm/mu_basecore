@@ -52,10 +52,10 @@ extern EFI_GUID  gOneCryptoProtocolGuid;
 **/
 
 // =============================================================================
-// Protocol version: 1.1
+// Protocol version: 1.2
 // =============================================================================
 #define ONE_CRYPTO_VERSION_MAJOR  1ULL
-#define ONE_CRYPTO_VERSION_MINOR  1ULL
+#define ONE_CRYPTO_VERSION_MINOR  2ULL
 
 // ============================================================================
 // Typedef Declarations
@@ -2489,6 +2489,28 @@ typedef BOOLEAN (EFIAPI *ONE_CRYPTO_PKCS7_VERIFY)(
   IN  UINTN        CertLength,
   IN  CONST UINT8  *InData,
   IN  UINTN        DataLength
+  );
+
+/**
+  Verify a PKCS#7/CMS SignedData structure and optionally return the verified
+  signer certificate chain (signer..anchor) in EFI_CERT_STACK form.
+
+  Going-forward replacement for ONE_CRYPTO_PKCS7_VERIFY. Pkcs7Verify() is
+  equivalent to CmsVerify() with SignerChain == NULL. See
+  <Library/BaseCryptLib.h> for the full contract.
+
+  @since 1.2
+  @ingroup PKCS
+**/
+typedef BOOLEAN (EFIAPI *ONE_CRYPTO_CMS_VERIFY)(
+  IN  CONST UINT8  *P7Data,
+  IN  UINTN        P7Length,
+  IN  CONST UINT8  *TrustedCert,
+  IN  UINTN        CertLength,
+  IN  CONST UINT8  *InData,
+  IN  UINTN        DataLength,
+  OUT UINT8        **SignerChain      OPTIONAL,
+  OUT UINTN        *SignerChainSize   OPTIONAL
   );
 
 /**
@@ -5660,6 +5682,8 @@ typedef struct _ONE_CRYPTO_PROTOCOL {
   ONE_CRYPTO_GET_AUTHENTICODE_HASH_ALGORITHM         GetAuthenticodeHashAlgorithm;
   ONE_CRYPTO_X509_GET_TBS_CERT_HASH                  X509GetTbsCertHash;
   ONE_CRYPTO_AUTHENTICODE_VERIFY_EX                  AuthenticodeVerifyEx;
+  /// v1.2 PKCS --------------------------------------------------------------
+  ONE_CRYPTO_CMS_VERIFY                              CmsVerify;
 } ONE_CRYPTO_PROTOCOL;
 
 /** @} */
