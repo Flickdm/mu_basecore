@@ -3100,6 +3100,22 @@ CmsVerify (
 }
 
 /**
+  GetCryptoOpCapability() forwarded to the OneCrypto provider. Requires a
+  provider reporting ONE_CRYPTO version >= 1.3; older providers gracefully
+  return EFI_UNSUPPORTED. See <Library/BaseCryptLib.h> for the full contract.
+**/
+EFI_STATUS
+EFIAPI
+GetCryptoOpCapability (
+  IN     CONST EFI_GUID  *OpIdGuid,
+  OUT    VOID            *Buffer       OPTIONAL,
+  IN OUT UINTN           *BufferSize
+  )
+{
+  CALL_CRYPTO_SERVICE (GetCryptoOpCapability, (OpIdGuid, Buffer, BufferSize), EFI_UNSUPPORTED, 1, 3);
+}
+
+/**
   Creates a DER-encoded PKCS#7 ContentInfo containing an envelopedData structure
   that wraps content encrypted for secure transmission to one or more recipients.
 
