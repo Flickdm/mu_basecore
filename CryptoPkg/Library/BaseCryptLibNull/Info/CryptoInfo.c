@@ -34,3 +34,24 @@ GetCryptoProviderVersionString (
 {
   return EFI_UNSUPPORTED;
 }
+
+/**
+  Query the crypto provider for the algorithms it accepts for a crypto
+  operation. Not provided by the Null crypto provider.
+
+  @param[in]      OpIdGuid    GUID identifying the crypto operation.
+  @param[out]     Buffer      NULL to probe required size, else receives payload.
+  @param[in,out]  BufferSize  In: size of Buffer. Out: bytes written or required.
+
+  @retval  EFI_UNSUPPORTED  The function is not provided by the Crypto provider.
+**/
+EFI_STATUS
+EFIAPI
+GetCryptoOpCapability (
+  IN     CONST EFI_GUID  *OpIdGuid,
+  OUT    VOID            *Buffer       OPTIONAL,
+  IN OUT UINTN           *BufferSize
+  )
+{
+  return EFI_UNSUPPORTED;
+}
