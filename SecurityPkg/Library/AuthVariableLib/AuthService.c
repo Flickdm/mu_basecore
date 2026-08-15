@@ -522,9 +522,10 @@ CheckSignatureListFormat (
   UINT32              Index;
   UINT32              SigCount;
   BOOLEAN             IsPk;
-  VOID                *RsaContext;
   EFI_SIGNATURE_DATA  *CertData;
   UINTN               CertLen;
+  UINT8               *TbsCert;
+  UINTN               TbsCertSize;
 
   if (DataSize == 0) {
     return EFI_SUCCESS;
@@ -547,7 +548,6 @@ CheckSignatureListFormat (
   SigCount    = 0;
   SigList     = (EFI_SIGNATURE_LIST *)Data;
   SigDataSize = DataSize;
-  RsaContext  = NULL;
 
   //
   // Walk through the input signature list and check the data format.
@@ -587,17 +587,17 @@ CheckSignatureListFormat (
 
     if (CompareGuid (&SigList->SignatureType, &gEfiCertX509Guid)) {
       //
-      // Try to retrieve the RSA public key from the X.509 certificate.
-      // If this operation fails, it's not a valid certificate.
+      // Validate that the entry is a well-formed X.509 certificate. This check is
+      // public-key-algorithm agnostic so that RSA, ECDSA, and post-quantum
+      // (ML-DSA) certificates are all accepted as first-class trust anchors.
       //
-      CertData   = (EFI_SIGNATURE_DATA *)((UINT8 *)SigList + sizeof (EFI_SIGNATURE_LIST) + SigList->SignatureHeaderSize);
-      CertLen    = SigList->SignatureSize - sizeof (EFI_GUID);
-      RsaContext = NULL;
-      if ((CertLen > 0) && !RsaGetPublicKeyFromX509 (CertData->SignatureData, CertLen, &RsaContext)) {
+      CertData    = (EFI_SIGNATURE_DATA *)((UINT8 *)SigList + sizeof (EFI_SIGNATURE_LIST) + SigList->SignatureHeaderSize);
+      CertLen     = SigList->SignatureSize - sizeof (EFI_GUID);
+      TbsCert     = NULL;
+      TbsCertSize = 0;
+      if ((CertLen > 0) && !X509GetTBSCert (CertData->SignatureData, CertLen, &TbsCert, &TbsCertSize)) {
         return EFI_INVALID_PARAMETER;
       }
-
-      RsaFree (RsaContext);
     }
 
     if ((SigList->SignatureListSize - sizeof (EFI_SIGNATURE_LIST) - SigList->SignatureHeaderSize) % SigList->SignatureSize != 0) {
