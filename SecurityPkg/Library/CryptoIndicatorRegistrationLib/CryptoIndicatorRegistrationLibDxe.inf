@@ -17,6 +17,7 @@
   LIBRARY_CLASS                  = CryptoIndicatorRegistrationLib|DXE_DRIVER UEFI_DRIVER
 
 [Sources]
+  CryptoIndicatorRegistrationCommon.c
   CryptoIndicatorRegistrationLibDxe.c
 
 [Packages]
