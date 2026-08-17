@@ -1,0 +1,39 @@
+## @file
+#  ECIT MM collector (Standalone MM).
+#
+#  Copyright (c) Microsoft Corporation.
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = CryptoIndicatorCollectorStandaloneMm
+  FILE_GUID                      = 3A6E1D42-8C57-4B0E-9F13-25D8B0714C6F
+  MODULE_TYPE                    = MM_STANDALONE
+  PI_SPECIFICATION_VERSION       = 0x00010032
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = CryptoIndicatorCollectorStandaloneMmEntryPoint
+
+[Sources]
+  CryptoIndicatorCollectorStandaloneMm.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  SecurityPkg/SecurityPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  MemoryAllocationLib
+  DebugLib
+  MmServicesTableLib
+  StandaloneMmDriverEntryPoint
+
+[Protocols]
+  gEfiCryptoIndicatorRegistrationProtocolGuid   ## PRODUCES
+
+[Guids]
+  gEcitMmBridgeHandlerGuid                       ## CONSUMES
+
+[Depex]
+  TRUE
