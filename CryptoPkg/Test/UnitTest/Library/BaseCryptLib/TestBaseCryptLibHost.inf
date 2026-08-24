@@ -45,6 +45,7 @@
   X509Tests.c
   TrustAnchorTests.c # MU_CHANGE
   AuthenticodeHashAlgorithmTests.c # MU_CHANGE
+  CryptoOpCapabilityTests.c # MU_CHANGE
   X509GetTbsCertHashTests.c # MU_CHANGE
 
 [Packages]
@@ -58,3 +59,6 @@
   UnitTestLib
   MmServicesTableLib
   SynchronizationLib
+
+[Guids]
+  gCryptoOpCmsContentDigestGuid  ## CONSUMES  # MU_CHANGE
