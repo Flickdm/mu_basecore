@@ -3079,6 +3079,43 @@ Pkcs7Verify (
 }
 
 /**
+  Forwards CmsVerify() to a OneCrypto 1.2 or later provider.
+**/
+BOOLEAN
+EFIAPI
+CmsVerify (
+  IN  CONST UINT8  *P7Data,
+  IN  UINTN        P7Length,
+  IN  CONST UINT8  *TrustedCert,
+  IN  UINTN        CertLength,
+  IN  CONST UINT8  *InData,
+  IN  UINTN        DataLength,
+  OUT UINT8        **SignerChain      OPTIONAL,
+  OUT UINTN        *SignerChainSize   OPTIONAL
+  )
+{
+  if ((SignerChain == NULL) != (SignerChainSize == NULL)) {
+    return FALSE;
+  }
+
+  CALL_CRYPTO_SERVICE (CmsVerify, (P7Data, P7Length, TrustedCert, CertLength, InData, DataLength, SignerChain, SignerChainSize), FALSE, 1, 2);
+}
+
+/**
+  Forwards GetCryptoOpCapability() to a OneCrypto 1.3 or later provider.
+**/
+EFI_STATUS
+EFIAPI
+GetCryptoOpCapability (
+  IN     CONST EFI_GUID  *OpIdGuid,
+  OUT    VOID            *Buffer       OPTIONAL,
+  IN OUT UINTN           *BufferSize
+  )
+{
+  CALL_CRYPTO_SERVICE (GetCryptoOpCapability, (OpIdGuid, Buffer, BufferSize), EFI_UNSUPPORTED, 1, 3);
+}
+
+/**
   Creates a DER-encoded PKCS#7 ContentInfo containing an envelopedData structure
   that wraps content encrypted for secure transmission to one or more recipients.
 

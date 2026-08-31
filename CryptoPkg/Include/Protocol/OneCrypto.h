@@ -52,10 +52,10 @@ extern EFI_GUID  gOneCryptoProtocolGuid;
 **/
 
 // =============================================================================
-// Protocol version: 1.1
+// Protocol version: 1.3
 // =============================================================================
 #define ONE_CRYPTO_VERSION_MAJOR  1ULL
-#define ONE_CRYPTO_VERSION_MINOR  1ULL
+#define ONE_CRYPTO_VERSION_MINOR  3ULL
 
 // ============================================================================
 // Typedef Declarations
@@ -2505,6 +2505,35 @@ typedef BOOLEAN (EFIAPI *ONE_CRYPTO_PKCS7_VERIFY)(
   IN  UINTN        CertLength,
   IN  CONST UINT8  *InData,
   IN  UINTN        DataLength
+  );
+
+/**
+  See CmsVerify() in <Library/BaseCryptLib.h>.
+
+  @since 1.2
+  @ingroup PKCS
+**/
+typedef BOOLEAN (EFIAPI *ONE_CRYPTO_CMS_VERIFY)(
+  IN  CONST UINT8  *P7Data,
+  IN  UINTN        P7Length,
+  IN  CONST UINT8  *TrustedCert,
+  IN  UINTN        CertLength,
+  IN  CONST UINT8  *InData,
+  IN  UINTN        DataLength,
+  OUT UINT8        **SignerChain      OPTIONAL,
+  OUT UINTN        *SignerChainSize   OPTIONAL
+  );
+
+/**
+  See GetCryptoOpCapability() in <Library/BaseCryptLib.h>.
+
+  @since 1.3
+  @ingroup Info
+**/
+typedef EFI_STATUS (EFIAPI *ONE_CRYPTO_GET_CRYPTO_OP_CAPABILITY)(
+  IN     CONST EFI_GUID  *OpIdGuid,
+  OUT    VOID            *Buffer       OPTIONAL,
+  IN OUT UINTN           *BufferSize
   );
 
 /**
@@ -5677,6 +5706,10 @@ typedef struct _ONE_CRYPTO_PROTOCOL {
   ONE_CRYPTO_X509_GET_TBS_CERT_HASH                  X509GetTbsCertHash;
   ONE_CRYPTO_AUTHENTICODE_VERIFY_EX                  AuthenticodeVerifyEx;
   ONE_CRYPTO_HASH_ALL_BY_GUID                        HashAllByGuid;
+  /// v1.2 PKCS --------------------------------------------------------------
+  ONE_CRYPTO_CMS_VERIFY                              CmsVerify;
+  /// v1.3 Info --------------------------------------------------------------
+  ONE_CRYPTO_GET_CRYPTO_OP_CAPABILITY                GetCryptoOpCapability;
 } ONE_CRYPTO_PROTOCOL;
 
 /** @} */

@@ -2428,6 +2428,9 @@ Pkcs7Sign (
   @retval  FALSE Invalid PKCS#7 signed data.
   @retval  FALSE This interface is not supported.
 
+    @note Use CmsVerify() for new code. Pkcs7Verify() is equivalent to
+      CmsVerify() with no signer-chain output.
+
 **/
 BOOLEAN
 EFIAPI
@@ -2438,6 +2441,45 @@ Pkcs7Verify (
   IN  UINTN        CertLength,
   IN  CONST UINT8  *InData,
   IN  UINTN        DataLength
+  );
+
+/**
+  Verifies a PKCS#7/CMS SignedData structure and optionally returns the
+  verified signer certificate chain.
+
+  If P7Data, TrustedCert or InData is NULL, then return FALSE.
+  If P7Length, CertLength or DataLength overflow, then return FALSE.
+  SignerChain and SignerChainSize must both be NULL or both be non-NULL.
+  If this interface is not supported, then return FALSE.
+
+  @param[in]   P7Data          Pointer to the PKCS#7/CMS SignedData message.
+  @param[in]   P7Length        Length of P7Data in bytes.
+  @param[in]   TrustedCert     Pointer to a trusted/root certificate encoded
+                               in DER, used for certificate chain verification.
+  @param[in]   CertLength      Length of TrustedCert in bytes.
+  @param[in]   InData          Pointer to the content to be verified.
+  @param[in]   DataLength      Length of InData in bytes.
+  @param[out]  SignerChain     On success, receives a newly allocated
+                               EFI_CERT_STACK ordered from signer to trust
+                               anchor. The caller must free it with FreePool().
+  @param[out]  SignerChainSize On success, receives the SignerChain size.
+
+  @retval TRUE   The specified PKCS#7/CMS signed data is valid.
+  @retval FALSE  Verification failed, parameters are invalid, or the requested
+                 output is not supported.
+
+**/
+BOOLEAN
+EFIAPI
+CmsVerify (
+  IN  CONST UINT8  *P7Data,
+  IN  UINTN        P7Length,
+  IN  CONST UINT8  *TrustedCert,
+  IN  UINTN        CertLength,
+  IN  CONST UINT8  *InData,
+  IN  UINTN        DataLength,
+  OUT UINT8        **SignerChain      OPTIONAL,
+  OUT UINTN        *SignerChainSize   OPTIONAL
   );
 
 /**
@@ -4670,5 +4712,33 @@ EFIAPI
 BaseCryptInit (
   VOID
   );
+
+// MU_CHANGE [BEGIN] - ECIT capability reporting.
+
+/**
+  Returns the capability descriptor for a crypto operation.
+
+  The operation identifier defines the descriptor format. Call with Buffer
+  set to NULL to query the required size.
+
+  @param[in]      OpIdGuid    Identifies the crypto operation.
+  @param[out]     Buffer      Optional buffer that receives the descriptor.
+  @param[in,out]  BufferSize  Buffer capacity on input; descriptor size on
+                              output.
+
+  @retval EFI_SUCCESS            The size was returned or Buffer was populated.
+  @retval EFI_BUFFER_TOO_SMALL   BufferSize contains the required size.
+  @retval EFI_NOT_FOUND          OpIdGuid is not supported.
+  @retval EFI_INVALID_PARAMETER  OpIdGuid or BufferSize is NULL.
+**/
+EFI_STATUS
+EFIAPI
+GetCryptoOpCapability (
+  IN     CONST EFI_GUID  *OpIdGuid,
+  OUT    VOID            *Buffer       OPTIONAL,
+  IN OUT UINTN           *BufferSize
+  );
+
+// MU_CHANGE [END]
 
 #endif // __BASE_CRYPT_LIB_H__

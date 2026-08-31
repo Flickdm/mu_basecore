@@ -34,3 +34,19 @@ GetCryptoProviderVersionString (
 {
   return EFI_UNSUPPORTED;
 }
+
+/**
+  See GetCryptoOpCapability() in <Library/BaseCryptLib.h>.
+
+  @retval EFI_UNSUPPORTED  This interface is not supported.
+**/
+EFI_STATUS
+EFIAPI
+GetCryptoOpCapability (
+  IN     CONST EFI_GUID  *OpIdGuid,
+  OUT    VOID            *Buffer       OPTIONAL,
+  IN OUT UINTN           *BufferSize
+  )
+{
+  return EFI_UNSUPPORTED;
+}
