@@ -709,14 +709,10 @@ Pkcs7Verify (
   CALL_CRYPTO_SERVICE (Pkcs7Verify, (P7Data, P7Length, TrustedCert, CertLength, InData, DataLength), FALSE);
 }
 
-// MU_CHANGE [BEGIN] - CmsVerify: shim over the Pkcs7Verify crypto service.
-// The EDKII_CRYPTO_PROTOCOL dispatch does not (yet) expose a native CmsVerify
-// entry, so the verified signer-chain output is unavailable through this path;
-// a request for it returns FALSE. With no chain requested this is equivalent to
-// Pkcs7Verify(). Regenerate via generate_cryptodriver.py if/when EDKII_CRYPTO
-// gains a native CmsVerify service.
+// MU_CHANGE [BEGIN] - CmsVerify compatibility shim.
+
 /**
-  CmsVerify() over the EDKII_CRYPTO_PROTOCOL dispatch. See <Library/BaseCryptLib.h>.
+  Implements CmsVerify() without signer-chain output using Pkcs7Verify().
 **/
 BOOLEAN
 EFIAPI

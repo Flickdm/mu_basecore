@@ -1,20 +1,8 @@
 /** @file
-  ECIT (EFI Crypto Indicator Table) crypto-operation identifier GUIDs.
+  Crypto operation identifiers used by GetCryptoOpCapability().
 
-  These GUIDs name the crypto operations understood by
-  GetCryptoOpCapability() (declared in <Library/BaseCryptLib.h>). A caller
-  passes one of these GUIDs to ask the linked crypto binary which
-  algorithms it will actually accept for that operation; the answer is a
-  CSV-encoded, NUL-terminated ASCII string of dotted-decimal algorithm
-  OIDs (unordered set).
-
-  The GUIDs live in CryptoPkg (not a backend package) so that
-  backend-agnostic consumers -- the OneCrypto protocol forwarder, an ECIT
-  collector, host tests, or either the OpenSSL or MbedTLS BaseCryptLib
-  implementation -- can reference them without depending on a specific
-  crypto backend. Storage is provided by AutoGen for every module that
-  lists them in its INF [Guids] block; the values are registered in
-  CryptoPkg.dec.
+  Each identifier below returns an unordered, NUL-terminated CSV of
+  dotted-decimal algorithm OIDs.
 
   Copyright (C) Microsoft Corporation
   SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -23,12 +11,16 @@
 #ifndef CRYPTO_OP_ID_H_
 #define CRYPTO_OP_ID_H_
 
-//
-// Operation-ID GUIDs. Stable once committed.
-//
+/// Signature algorithms accepted by CMS verification.
 extern EFI_GUID  gCryptoOpCmsVerifyGuid;
+
+/// Digest algorithms accepted for CMS content digest calculation.
 extern EFI_GUID  gCryptoOpCmsContentDigestGuid;
+
+/// Signature algorithms accepted by Authenticode verification.
 extern EFI_GUID  gCryptoOpAuthenticodeVerifyGuid;
+
+/// Digest algorithms accepted for Authenticode image hashing.
 extern EFI_GUID  gCryptoOpAuthenticodeHashGuid;
 
 #endif // CRYPTO_OP_ID_H_

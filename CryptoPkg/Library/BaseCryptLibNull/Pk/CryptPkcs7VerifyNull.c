@@ -163,8 +163,7 @@ Pkcs7GetAttachedContent (
 }
 
 /**
-  CmsVerify() -- not supported by this BaseCryptLib instance.
-  See <Library/BaseCryptLib.h> for the full contract.
+  See CmsVerify() in <Library/BaseCryptLib.h>.
 
   @retval FALSE  This interface is not supported.
 **/

@@ -2428,9 +2428,8 @@ Pkcs7Sign (
   @retval  FALSE Invalid PKCS#7 signed data.
   @retval  FALSE This interface is not supported.
 
-  @note  LEGACY. Prefer CmsVerify(), the going-forward PKCS#7/CMS SignedData
-         verification interface. Pkcs7Verify() is equivalent to CmsVerify()
-         called with SignerChain == NULL and will eventually be deprecated.
+    @note Use CmsVerify() for new code. Pkcs7Verify() is equivalent to
+      CmsVerify() with no signer-chain output.
 
 **/
 BOOLEAN
@@ -2445,20 +2444,12 @@ Pkcs7Verify (
   );
 
 /**
-  Verify a PKCS#7/CMS SignedData structure and, when requested, return the
-  signer's cryptographically-verified certificate chain (signer..anchor) in
-  EFI_CERT_STACK form.
-
-  CmsVerify() is the going-forward replacement for Pkcs7Verify(). It accepts
-  the same PKCS#7/CMS SignedData inputs, and additionally can return the
-  verified signer certificate chain -- the chain the underlying verifier
-  actually built and used -- so a caller can perform per-certificate
-  revocation (dbx) checks without a second, redundant chain-building pass
-  over the same signature. Pkcs7Verify() is retained as a legacy wrapper
-  (equivalent to CmsVerify() with SignerChain == NULL).
+  Verifies a PKCS#7/CMS SignedData structure and optionally returns the
+  verified signer certificate chain.
 
   If P7Data, TrustedCert or InData is NULL, then return FALSE.
   If P7Length, CertLength or DataLength overflow, then return FALSE.
+  SignerChain and SignerChainSize must both be NULL or both be non-NULL.
   If this interface is not supported, then return FALSE.
 
   @param[in]   P7Data          Pointer to the PKCS#7/CMS SignedData message.
@@ -2468,16 +2459,14 @@ Pkcs7Verify (
   @param[in]   CertLength      Length of TrustedCert in bytes.
   @param[in]   InData          Pointer to the content to be verified.
   @param[in]   DataLength      Length of InData in bytes.
-  @param[out]  SignerChain     Optional. On TRUE, receives a newly allocated
-                               EFI_CERT_STACK ordered signer..anchor; caller
-                               frees with FreePool(). NULL to skip chain
-                               extraction.
-  @param[out]  SignerChainSize Optional. Receives the SignerChain length in
-                               bytes.
+  @param[out]  SignerChain     On success, receives a newly allocated
+                               EFI_CERT_STACK ordered from signer to trust
+                               anchor. The caller must free it with FreePool().
+  @param[out]  SignerChainSize On success, receives the SignerChain size.
 
   @retval TRUE   The specified PKCS#7/CMS signed data is valid.
-  @retval FALSE  Invalid PKCS#7/CMS signed data, or this interface (or the
-                 requested signer-chain output) is not supported.
+  @retval FALSE  Verification failed, parameters are invalid, or the requested
+                 output is not supported.
 
 **/
 BOOLEAN
@@ -4727,32 +4716,20 @@ BaseCryptInit (
 // MU_CHANGE [BEGIN] - ECIT capability reporting.
 
 /**
-  Return the capability descriptor for a given crypto operation (ECIT).
+  Returns the capability descriptor for a crypto operation.
 
-  GetCryptoOpCapability() lets a caller ask the linked crypto binary which
-  algorithms it will actually accept for the operation named by OpIdGuid
-  (see <Guid/CryptoOpId.h> for known op-ID GUIDs, e.g.
-  gCryptoOpCmsVerifyGuid). For the verification operations the payload is
-  a CSV-encoded, NUL-terminated ASCII string of dotted-decimal algorithm
-  OIDs (e.g. "1.2.840.113549.1.1.11,1.2.840.10045.4.3.2"). The OIDs are an
-  UNORDERED SET: callers must not infer preference from position. An empty
-  payload (a single NUL byte) means the linked provider supports no
-  algorithm the operation's verify pipeline accepts in this build.
+  The operation identifier defines the descriptor format. Call with Buffer
+  set to NULL to query the required size.
 
-  Standard sizing pattern:
-    1. Call with Buffer == NULL to learn the required size in *BufferSize.
-    2. Allocate a buffer of that size.
-    3. Call again with Buffer != NULL to fetch the payload.
+  @param[in]      OpIdGuid    Identifies the crypto operation.
+  @param[out]     Buffer      Optional buffer that receives the descriptor.
+  @param[in,out]  BufferSize  Buffer capacity on input; descriptor size on
+                              output.
 
-  @param[in]      OpIdGuid    GUID identifying the crypto operation.
-  @param[out]     Buffer      NULL to probe required size, else receives payload.
-  @param[in,out]  BufferSize  In: size of Buffer. Out: bytes written or required
-                              (always includes the trailing NUL).
-
-  @retval EFI_SUCCESS           Buffer populated (or size returned if Buffer NULL).
-  @retval EFI_BUFFER_TOO_SMALL  Buffer too small; *BufferSize set to required.
-  @retval EFI_NOT_FOUND         OpIdGuid is unknown to this binary.
-  @retval EFI_INVALID_PARAMETER OpIdGuid or BufferSize is NULL.
+  @retval EFI_SUCCESS            The size was returned or Buffer was populated.
+  @retval EFI_BUFFER_TOO_SMALL   BufferSize contains the required size.
+  @retval EFI_NOT_FOUND          OpIdGuid is not supported.
+  @retval EFI_INVALID_PARAMETER  OpIdGuid or BufferSize is NULL.
 **/
 EFI_STATUS
 EFIAPI

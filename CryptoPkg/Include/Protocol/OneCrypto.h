@@ -2508,12 +2508,7 @@ typedef BOOLEAN (EFIAPI *ONE_CRYPTO_PKCS7_VERIFY)(
   );
 
 /**
-  Verify a PKCS#7/CMS SignedData structure and optionally return the verified
-  signer certificate chain (signer..anchor) in EFI_CERT_STACK form.
-
-  Going-forward replacement for ONE_CRYPTO_PKCS7_VERIFY. Pkcs7Verify() is
-  equivalent to CmsVerify() with SignerChain == NULL. See
-  <Library/BaseCryptLib.h> for the full contract.
+  See CmsVerify() in <Library/BaseCryptLib.h>.
 
   @since 1.2
   @ingroup PKCS
@@ -2530,15 +2525,7 @@ typedef BOOLEAN (EFIAPI *ONE_CRYPTO_CMS_VERIFY)(
   );
 
 /**
-  Query the linked crypto binary for the algorithms it will accept for the
-  crypto operation named by OpIdGuid.
-
-  Backend-agnostic capability reporting used by the ECIT collector and other
-  consumers. For verification operations the payload is a CSV-encoded,
-  NUL-terminated ASCII string of dotted-decimal algorithm OIDs (an unordered
-  set). Use the standard two-call sizing pattern (Buffer == NULL to probe
-  *BufferSize, then again to fetch). See <Library/BaseCryptLib.h> for the full
-  contract and <Guid/CryptoOpId.h> for known op-ID GUIDs.
+  See GetCryptoOpCapability() in <Library/BaseCryptLib.h>.
 
   @since 1.3
   @ingroup Info
@@ -5722,7 +5709,7 @@ typedef struct _ONE_CRYPTO_PROTOCOL {
   /// v1.2 PKCS --------------------------------------------------------------
   ONE_CRYPTO_CMS_VERIFY                              CmsVerify;
   /// v1.3 Info --------------------------------------------------------------
-  ONE_CRYPTO_GET_CRYPTO_OP_CAPABILITY               GetCryptoOpCapability;
+  ONE_CRYPTO_GET_CRYPTO_OP_CAPABILITY                GetCryptoOpCapability;
 } ONE_CRYPTO_PROTOCOL;
 
 /** @} */

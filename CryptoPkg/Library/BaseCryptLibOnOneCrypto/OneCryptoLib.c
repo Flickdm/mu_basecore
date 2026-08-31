@@ -3079,9 +3079,7 @@ Pkcs7Verify (
 }
 
 /**
-  CmsVerify() forwarded to the OneCrypto provider. Requires a provider
-  reporting ONE_CRYPTO version >= 1.2; older providers gracefully return
-  FALSE. See <Library/BaseCryptLib.h> for the full contract.
+  Forwards CmsVerify() to a OneCrypto 1.2 or later provider.
 **/
 BOOLEAN
 EFIAPI
@@ -3096,13 +3094,15 @@ CmsVerify (
   OUT UINTN        *SignerChainSize   OPTIONAL
   )
 {
+  if ((SignerChain == NULL) != (SignerChainSize == NULL)) {
+    return FALSE;
+  }
+
   CALL_CRYPTO_SERVICE (CmsVerify, (P7Data, P7Length, TrustedCert, CertLength, InData, DataLength, SignerChain, SignerChainSize), FALSE, 1, 2);
 }
 
 /**
-  GetCryptoOpCapability() forwarded to the OneCrypto provider. Requires a
-  provider reporting ONE_CRYPTO version >= 1.3; older providers gracefully
-  return EFI_UNSUPPORTED. See <Library/BaseCryptLib.h> for the full contract.
+  Forwards GetCryptoOpCapability() to a OneCrypto 1.3 or later provider.
 **/
 EFI_STATUS
 EFIAPI
