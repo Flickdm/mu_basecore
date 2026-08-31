@@ -52,10 +52,10 @@ extern EFI_GUID  gOneCryptoProtocolGuid;
 **/
 
 // =============================================================================
-// Protocol version: 1.1
+// Protocol version: 1.3
 // =============================================================================
 #define ONE_CRYPTO_VERSION_MAJOR  1ULL
-#define ONE_CRYPTO_VERSION_MINOR  1ULL
+#define ONE_CRYPTO_VERSION_MINOR  3ULL
 
 // ============================================================================
 // Typedef Declarations
@@ -2505,6 +2505,48 @@ typedef BOOLEAN (EFIAPI *ONE_CRYPTO_PKCS7_VERIFY)(
   IN  UINTN        CertLength,
   IN  CONST UINT8  *InData,
   IN  UINTN        DataLength
+  );
+
+/**
+  Verify a PKCS#7/CMS SignedData structure and optionally return the verified
+  signer certificate chain (signer..anchor) in EFI_CERT_STACK form.
+
+  Going-forward replacement for ONE_CRYPTO_PKCS7_VERIFY. Pkcs7Verify() is
+  equivalent to CmsVerify() with SignerChain == NULL. See
+  <Library/BaseCryptLib.h> for the full contract.
+
+  @since 1.2
+  @ingroup PKCS
+**/
+typedef BOOLEAN (EFIAPI *ONE_CRYPTO_CMS_VERIFY)(
+  IN  CONST UINT8  *P7Data,
+  IN  UINTN        P7Length,
+  IN  CONST UINT8  *TrustedCert,
+  IN  UINTN        CertLength,
+  IN  CONST UINT8  *InData,
+  IN  UINTN        DataLength,
+  OUT UINT8        **SignerChain      OPTIONAL,
+  OUT UINTN        *SignerChainSize   OPTIONAL
+  );
+
+/**
+  Query the linked crypto binary for the algorithms it will accept for the
+  crypto operation named by OpIdGuid.
+
+  Backend-agnostic capability reporting used by the ECIT collector and other
+  consumers. For verification operations the payload is a CSV-encoded,
+  NUL-terminated ASCII string of dotted-decimal algorithm OIDs (an unordered
+  set). Use the standard two-call sizing pattern (Buffer == NULL to probe
+  *BufferSize, then again to fetch). See <Library/BaseCryptLib.h> for the full
+  contract and <Guid/CryptoOpId.h> for known op-ID GUIDs.
+
+  @since 1.3
+  @ingroup Info
+**/
+typedef EFI_STATUS (EFIAPI *ONE_CRYPTO_GET_CRYPTO_OP_CAPABILITY)(
+  IN     CONST EFI_GUID  *OpIdGuid,
+  OUT    VOID            *Buffer       OPTIONAL,
+  IN OUT UINTN           *BufferSize
   );
 
 /**
@@ -5677,6 +5719,10 @@ typedef struct _ONE_CRYPTO_PROTOCOL {
   ONE_CRYPTO_X509_GET_TBS_CERT_HASH                  X509GetTbsCertHash;
   ONE_CRYPTO_AUTHENTICODE_VERIFY_EX                  AuthenticodeVerifyEx;
   ONE_CRYPTO_HASH_ALL_BY_GUID                        HashAllByGuid;
+  /// v1.2 PKCS --------------------------------------------------------------
+  ONE_CRYPTO_CMS_VERIFY                              CmsVerify;
+  /// v1.3 Info --------------------------------------------------------------
+  ONE_CRYPTO_GET_CRYPTO_OP_CAPABILITY               GetCryptoOpCapability;
 } ONE_CRYPTO_PROTOCOL;
 
 /** @} */
