@@ -52,10 +52,10 @@ extern EFI_GUID  gOneCryptoProtocolGuid;
 **/
 
 // =============================================================================
-// Protocol version: 1.1
+// Protocol version: 1.2
 // =============================================================================
 #define ONE_CRYPTO_VERSION_MAJOR  1ULL
-#define ONE_CRYPTO_VERSION_MINOR  1ULL
+#define ONE_CRYPTO_VERSION_MINOR  2ULL
 
 // ============================================================================
 // Typedef Declarations
@@ -2505,6 +2505,27 @@ typedef BOOLEAN (EFIAPI *ONE_CRYPTO_PKCS7_VERIFY)(
   IN  UINTN        CertLength,
   IN  CONST UINT8  *InData,
   IN  UINTN        DataLength
+  );
+
+/**
+  Get the number of SignerInfo structures in a PKCS#7/CMS SignedData structure.
+
+  If P7Data is NULL, then return 0.
+  If P7Length is 0, then return 0.
+  If this interface is not supported, then return 0.
+
+  @param[in]  P7Data    Pointer to the PKCS#7/CMS message.
+  @param[in]  P7Length  Length of the PKCS#7/CMS message in bytes.
+
+  @retval  >0  Number of SignerInfo structures.
+  @retval  0   Error or no SignerInfo found.
+
+  @since 1.2
+  @ingroup PKCS
+**/
+typedef UINTN (EFIAPI *ONE_CRYPTO_CMS_GET_SIGNER_INFO_NUM)(
+  IN  CONST UINT8  *P7Data,
+  IN  UINTN        P7Length
   );
 
 /**
@@ -5677,6 +5698,8 @@ typedef struct _ONE_CRYPTO_PROTOCOL {
   ONE_CRYPTO_X509_GET_TBS_CERT_HASH                  X509GetTbsCertHash;
   ONE_CRYPTO_AUTHENTICODE_VERIFY_EX                  AuthenticodeVerifyEx;
   ONE_CRYPTO_HASH_ALL_BY_GUID                        HashAllByGuid;
+  /// v1.2 CMS ---------------------------------------------------------------
+  ONE_CRYPTO_CMS_GET_SIGNER_INFO_NUM                 CmsGetSignerInfoNum;
 } ONE_CRYPTO_PROTOCOL;
 
 /** @} */
