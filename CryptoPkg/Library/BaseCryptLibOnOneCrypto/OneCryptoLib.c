@@ -47,15 +47,15 @@ ValidateCryptoVersion (
   )
 {
   //
-  // Protocol major versions are incompatible. Within the matching major,
-  // the binary version must meet the service's minimum minor version.
+  // Check if binary version is less than the required minimum version.
+  // Binary version must be >= (MinMajor.MinMinor).
   //
-  if ((CryptoServices->Major != MinMajor) ||
-      (CryptoServices->Minor < MinMinor))
+  if ((CryptoServices->Major < MinMajor) ||
+      ((CryptoServices->Major == MinMajor) && (CryptoServices->Minor < MinMinor)))
   {
     DEBUG ((
       DEBUG_ERROR,
-      "[%a] Crypto binary version incompatible: requires %d.%d, got %d.%d\n",
+      "[%a] Crypto binary version too old: requires >= %d.%d, got %d.%d\n",
       gEfiCallerBaseName,
       (UINT32)MinMajor,
       (UINT32)MinMinor,
@@ -67,8 +67,8 @@ ValidateCryptoVersion (
   }
 
   //
+  // Binary version meets the minimum requirement.
   // Function is available when its protocol pointer is non-NULL.
-
   //
   return TRUE;
 }
