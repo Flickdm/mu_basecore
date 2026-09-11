@@ -52,10 +52,10 @@ extern EFI_GUID  gOneCryptoProtocolGuid;
 **/
 
 // =============================================================================
-// Protocol version: 1.2
+// Protocol version: 1.3
 // =============================================================================
 #define ONE_CRYPTO_VERSION_MAJOR  1ULL
-#define ONE_CRYPTO_VERSION_MINOR  2ULL
+#define ONE_CRYPTO_VERSION_MINOR  3ULL
 
 // ============================================================================
 // Typedef Declarations
@@ -4089,6 +4089,11 @@ typedef BOOLEAN (EFIAPI *ONE_CRYPTO_X509_GET_SIGNATURE_ALGORITHM)(
   IN OUT   UINTN       *OidSize
   );
 
+typedef BOOLEAN (EFIAPI *ONE_CRYPTO_X509_IS_PUBLIC_KEY_SUPPORTED)(
+  IN CONST UINT8  *Cert,
+  IN UINTN        CertSize
+  );
+
 /**
   Retrieve the Extended Key Usage from one X.509 certificate.
 
@@ -5700,6 +5705,8 @@ typedef struct _ONE_CRYPTO_PROTOCOL {
   ONE_CRYPTO_HASH_ALL_BY_GUID                        HashAllByGuid;
   /// v1.2 CMS ---------------------------------------------------------------
   ONE_CRYPTO_CMS_GET_SIGNER_INFO_NUM                 CmsGetSignerInfoNum;
+  /// v1.3 X509 --------------------------------------------------------------
+  ONE_CRYPTO_X509_IS_PUBLIC_KEY_SUPPORTED            X509IsPublicKeySupported;
 } ONE_CRYPTO_PROTOCOL;
 
 /** @} */
