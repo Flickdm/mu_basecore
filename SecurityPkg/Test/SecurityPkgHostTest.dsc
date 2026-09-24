@@ -78,6 +78,7 @@ SecurityPkg/Library/DxeImageVerificationLib2/GoogleTest/DxeImageVerificationLibG
       PeCoffLib|MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
       PeCoffExtraActionLib|MdePkg/Library/BasePeCoffExtraActionLibNull/BasePeCoffExtraActionLibNull.inf
       TpmMeasurementLib|MdeModulePkg/Test/Mock/Library/GoogleTest/MockTpmMeasurementLib/MockTpmMeasurementLib.inf
+      EcitReportLib|SecurityPkg/Library/EcitReportLibNull/EcitReportLibNull.inf
   }
 
   SecurityPkg/Library/ImageSecureBootVerificationResultTableLib/GoogleTest/ImageSecureBootVerificationResultTableLibGoogleTest.inf {
@@ -98,6 +99,7 @@ SecurityPkg/Library/DxeImageVerificationLib2/GoogleTest/DxeImageVerificationLibG
       BaseCryptLib|CryptoPkg/Test/Mock/Library/GoogleTest/MockBaseCryptLib/MockBaseCryptLib.inf
       PlatformSecureLib|SecurityPkg/Library/PlatformSecureLibNull/PlatformSecureLibNull.inf
       VariablePolicyLib|MdeModulePkg/Library/VariablePolicyLib/VariablePolicyLib.inf
+      EcitReportLib|SecurityPkg/Library/EcitReportLibNull/EcitReportLibNull.inf
         SecurityLockAuditLib|MdeModulePkg/Library/SecurityLockAuditLibNull/SecurityLockAuditLibNull.inf
   }
 

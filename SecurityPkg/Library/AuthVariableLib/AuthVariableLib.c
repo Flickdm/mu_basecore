@@ -18,6 +18,10 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 #include "AuthServiceInternal.h"
 
+#include <Library/EcitReportLib.h>
+#include <Guid/CryptoIndicatorTable.h>
+#include <Guid/CryptoOpId.h>
+
 ///
 /// Global database array for scratch
 ///
@@ -34,6 +38,20 @@ EFI_GUID  mSignatureSupport[] = { EFI_CERT_SHA1_GUID, EFI_CERT_SHA256_GUID, EFI_
 VOID  *mHashSha256Ctx = NULL;
 VOID  *mHashSha384Ctx = NULL;
 VOID  *mHashSha512Ctx = NULL;
+
+//
+// Crypto operation used to verify Secure Boot database updates.
+//
+STATIC CONST EFI_GUID  *mSecureBootDatabaseUpdateVerificationOps[] = {
+  &gCryptoOpCmsVerifyGuid
+};
+
+//
+// Signature types accepted when authorizing Secure Boot database updates.
+//
+STATIC CONST EFI_GUID  mSecureBootDatabaseUpdateAuthorizationTypes[] = {
+  EFI_CERT_X509_GUID
+};
 
 VARIABLE_ENTRY_PROPERTY  mAuthVarEntry[] = {
   {
@@ -79,6 +97,9 @@ AUTH_VAR_LIB_CONTEXT_IN  *mAuthVarLibContextIn = NULL;
   Initialization for authenticated variable services.
   If this initialization returns error status, other APIs will not work
   and expect to be not called then.
+
+  This function also reports the Secure Boot database update verification and
+  authorization capabilities to the ECIT collector.
 
   @param[in]  AuthVarLibContextIn   Pointer to input auth variable lib context.
   @param[out] AuthVarLibContextOut  Pointer to output auth variable lib context.
@@ -312,6 +333,21 @@ AuthVariableLibInitialize (
   mAuthVarAddressPointer[10]                = (VOID **)&(mAuthVarLibContextIn->AtRuntime),
   AuthVarLibContextOut->AddressPointer      = mAuthVarAddressPointer;
   AuthVarLibContextOut->AddressPointerCount = ARRAY_SIZE (mAuthVarAddressPointer);
+
+  //
+  // Report authenticated-variable update capabilities.
+  //
+  EcitReportCryptoOpCapabilities (
+    &gEfiEcitFeatureSbDatabaseUpdateVerificationGuid,
+    mSecureBootDatabaseUpdateVerificationOps,
+    ARRAY_SIZE (mSecureBootDatabaseUpdateVerificationOps)
+    );
+
+  EcitReportCapability (
+    &gEfiEcitFeatureSbDatabaseUpdateAuthorizationGuid,
+    mSecureBootDatabaseUpdateAuthorizationTypes,
+    sizeof (mSecureBootDatabaseUpdateAuthorizationTypes)
+    );
 
   return Status;
 }

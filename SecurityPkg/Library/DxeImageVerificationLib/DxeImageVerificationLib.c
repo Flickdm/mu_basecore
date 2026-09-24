@@ -20,6 +20,10 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 #include "DxeImageVerificationLib.h"
 
+#include <Library/EcitReportLib.h>
+#include <Guid/CryptoIndicatorTable.h>
+#include <Guid/CryptoOpId.h>
+
 //
 // Caution: This is used by a function which may receive untrusted input.
 // These global variables hold PE/COFF image data, and they should be validated before use.
@@ -70,6 +74,43 @@ HASH_TABLE  mHash[] = {
 };
 
 EFI_STRING  mHashTypeStr;
+
+//
+// Crypto operations used to verify image signatures and hashes.
+//
+STATIC CONST EFI_GUID  *mImageVerificationOps[] = {
+  &gCryptoOpAuthenticodeVerifyGuid,
+  &gCryptoOpAuthenticodeHashGuid
+};
+
+//
+// Signature types accepted from the authorized signature database.
+//
+STATIC CONST EFI_GUID  mSecureBootImageAuthorizationTypes[] = {
+  EFI_CERT_X509_GUID,
+ #ifndef DISABLE_SHA1_DEPRECATED_INTERFACES
+  EFI_CERT_SHA1_GUID,
+ #endif
+  EFI_CERT_SHA256_GUID,
+  EFI_CERT_SHA384_GUID,
+  EFI_CERT_SHA512_GUID
+};
+
+//
+// Signature types evaluated in the forbidden signature database.
+//
+STATIC CONST EFI_GUID  mSecureBootImageRevocationTypes[] = {
+  EFI_CERT_X509_GUID,
+  EFI_CERT_X509_SHA256_GUID,
+  EFI_CERT_X509_SHA384_GUID,
+  EFI_CERT_X509_SHA512_GUID,
+ #ifndef DISABLE_SHA1_DEPRECATED_INTERFACES
+  EFI_CERT_SHA1_GUID,
+ #endif
+  EFI_CERT_SHA256_GUID,
+  EFI_CERT_SHA384_GUID,
+  EFI_CERT_SHA512_GUID
+};
 
 /**
   SecureBoot Hook for processing image verification.
@@ -2123,12 +2164,17 @@ OnReadyToBoot (
 }
 
 /**
-  Register security measurement handler.
+  Initialize image verification and report its ECIT capabilities.
+
+  Create the event that publishes the image execution table, report the image
+  verification, Secure Boot image authorization, and image revocation
+  capabilities, and register the image security handler.
 
   @param  ImageHandle   ImageHandle of the loaded driver.
   @param  SystemTable   Pointer to the EFI System Table.
 
-  @retval EFI_SUCCESS   The handlers were registered successfully.
+  @retval EFI_SUCCESS  The image security handler was registered.
+  @retval Others       The image security handler could not be registered.
 **/
 EFI_STATUS
 EFIAPI
@@ -2147,6 +2193,27 @@ DxeImageVerificationLibConstructor (
     OnReadyToBoot,
     NULL,
     &Event
+    );
+
+  //
+  // Report image-verification capabilities.
+  //
+  EcitReportCryptoOpCapabilities (
+    &gEfiEcitFeatureSbImageVerificationGuid,
+    mImageVerificationOps,
+    ARRAY_SIZE (mImageVerificationOps)
+    );
+
+  EcitReportCapability (
+    &gEfiEcitFeatureSbImageAuthorizationGuid,
+    mSecureBootImageAuthorizationTypes,
+    sizeof (mSecureBootImageAuthorizationTypes)
+    );
+
+  EcitReportCapability (
+    &gEfiEcitFeatureSbImageRevocationGuid,
+    mSecureBootImageRevocationTypes,
+    sizeof (mSecureBootImageRevocationTypes)
     );
 
   return RegisterSecurity2Handler (
