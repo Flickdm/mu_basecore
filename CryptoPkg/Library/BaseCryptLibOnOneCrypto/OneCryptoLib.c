@@ -5872,6 +5872,29 @@ TlsSetEcCurve (
 }
 
 /**
+  Set the TLS security level.
+
+  @param[in]  Tls                Pointer to the TLS object.
+  @param[in]  Level              TLS security level to set.
+
+  @retval  EFI_SUCCESS           The TLS security level was set successfully.
+  @retval  EFI_INVALID_PARAMETER The parameters are invalid.
+  @retval  EFI_UNSUPPORTED       The requested TLS security level is not supported.
+
+  @since 1.1
+  @ingroup Tls
+**/
+EFI_STATUS
+EFIAPI
+TlsSetSecurityLevel (
+  IN VOID   *Tls,
+  IN UINT8  Level
+  )
+{
+  CALL_CRYPTO_SERVICE (TlsSetSecurityLevel, (Tls, Level), EFI_UNSUPPORTED, 1, 1);
+}
+
+/**
   Gets the protocol version used by the specified TLS connection.
 
   This function returns the protocol version used by the specified TLS

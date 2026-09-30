@@ -52,10 +52,10 @@ extern EFI_GUID  gOneCryptoProtocolGuid;
 **/
 
 // =============================================================================
-// Protocol version: 1.0
+// Protocol version: 1.1
 // =============================================================================
 #define ONE_CRYPTO_VERSION_MAJOR  1ULL
-#define ONE_CRYPTO_VERSION_MINOR  0ULL
+#define ONE_CRYPTO_VERSION_MINOR  1ULL
 
 // ============================================================================
 // Typedef Declarations
@@ -4829,6 +4829,24 @@ typedef EFI_STATUS (EFIAPI *ONE_CRYPTO_TLS_SET_EC_CURVE)(
   );
 
 /**
+  Set the TLS security level.
+
+  @param[in]  Tls                Pointer to the TLS object.
+  @param[in]  Level              TLS security level to set.
+
+  @retval  EFI_SUCCESS           The TLS security level was set successfully.
+  @retval  EFI_INVALID_PARAMETER The parameters are invalid.
+  @retval  EFI_UNSUPPORTED       The requested TLS security level is not supported.
+
+  @since 1.1
+  @ingroup Tls
+**/
+typedef EFI_STATUS (EFIAPI *ONE_CRYPTO_TLS_SET_SECURITY_LEVEL)(
+  IN VOID   *Tls,
+  IN UINT8  Level
+  );
+
+/**
   Gets the protocol version used by the specified TLS connection.
 
   This function returns the protocol version used by the specified TLS
@@ -5471,6 +5489,8 @@ typedef struct _ONE_CRYPTO_PROTOCOL {
   ONE_CRYPTO_IMAGE_TIMESTAMP_VERIFY                 ImageTimestampVerify;
   /// v1.0 Info --------------------------------------------------------------
   ONE_CRYPTO_GET_CRYPTO_PROVIDER_VERSION_STRING     GetCryptoProviderVersionString;
+  /// v1.1 Tls ---------------------------------------------------------------
+  ONE_CRYPTO_TLS_SET_SECURITY_LEVEL                 TlsSetSecurityLevel;
 } ONE_CRYPTO_PROTOCOL;
 
 /** @} */
