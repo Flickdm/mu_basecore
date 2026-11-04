@@ -32,6 +32,21 @@ examples below in the [How to Use BaseCryptLibOnOneCrypto](#how-to-use-basecrypt
 
 ## Architecture
 
+### Optional crypto-operation capabilities
+
+`GetCryptoOpCapability()` reports provider algorithm OIDs for an operation from
+`Guid/CryptoOpId.h`. It requires the appended OneCrypto 1.1 service. The library
+checks the version before reading that field and returns `EFI_UNSUPPORTED` for
+1.0 binaries, incompatible major versions, or a missing service pointer.
+Later 1.x minor versions remain compatible.
+
+Free a successful capability array once with `FreePool()`; its read-only,
+NUL-terminated dotted-decimal OID strings share that allocation. A supported
+operation may return an empty set (`EFI_SUCCESS`, NULL array, zero count).
+`EFI_NOT_FOUND` means the provider does not implement that operation. Errors
+clear all non-NULL outputs. These are provider capabilities, not certificate
+trust decisions or feature policy.
+
 ```mermaid
 ---
 config:
